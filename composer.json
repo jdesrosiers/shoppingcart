@@ -1,0 +1,24 @@
+{
+    "name": "jdesrosiers/shoppingcart",
+    "description": "A RESTful shopping cart web service built using the Silex framework.",
+    "authors": [
+        {
+            "name": "Jason Desrosiers",
+            "email": "jdesrosi@gmail.com"
+        }
+    ],
+    "require": {
+        "doctrine/common": "~2.3",
+        "jms/serializer": "~0.12",
+        "monolog/monolog": "~1.0",
+        "silex/silex": "1.0.x-dev",
+        "symfony/monolog-bridge": "~2.3",
+        "symfony/validator": "~2.3"
+    },
+    "require-dev": {
+        "symfony/browser-kit": "~2.3"
+    },
+    "autoload": {
+        "psr-0": {"JDesrosiers": "src/"}
+    }
+}

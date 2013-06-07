@@ -1,0 +1,5 @@
+/vendor/
+/log/development.log
+/cache/
+/cart.data
+/cartstore/
