@@ -40,7 +40,7 @@ class Cart
 
     public function __construct(array $cart)
     {
-        $this->cartId = $cart['cartId'];
+        $this->cartId = array_key_exists('cartId', $cart) ? $cart['cartId'] : substr(md5(microtime(true)), 0, 12);
         $this->createdDate = $cart['createdDate'];
         
         if (array_key_exists('completedDate', $cart)) {

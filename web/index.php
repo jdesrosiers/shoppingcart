@@ -1,15 +1,13 @@
 <?php
 
-use Doctrine\Common\Cache\FilesystemCache;
 use JDesrosiers\Service\Cart\CartControllerProvider;
+use JDesrosiers\Service\Cart\CartServiceProvider;
 
 require_once __DIR__ . "/../vendor/autoload.php";
 $app = require __DIR__ . "/../app/dev.php";
 
 // Add controllers
-$app["cart"] = $app->share(function () {
-    return new FilesystemCache(__DIR__ . "/../cartstore");
-});
+$app->register(new CartServiceProvider());
 $app->mount("/cart", new CartControllerProvider());
 
 // Handle request
