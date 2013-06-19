@@ -23,7 +23,7 @@ class CartServiceTest extends \PHPUnit_Framework_TestCase
         $this->app["cart"] = new ArrayCache();
         $this->app->mount("/cart", new CartControllerProvider());
 
-        $response = $this->app['cart']->save("4ee8e29d45851", new Cart(array(
+        $this->app['cart']->save("4ee8e29d45851", new Cart(array(
             "cartId" => "4ee8e29d45851",
             "createdDate" => new \DateTime("2002-10-10T12:00:00-05:00"),
             "completedDate" => null,
@@ -57,6 +57,50 @@ class CartServiceTest extends \PHPUnit_Framework_TestCase
     public function tearDown()
     {
         exec("rm -rf " . dirname(__DIR__) . "/testcache/");
+    }
+
+    public function dataProviderCreateCart()
+    {
+        $xml = <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<Cart>
+</Cart>
+XML;
+
+        return array(
+            array("application/json", '{}'),
+            array("application/xml", $xml),
+            array("text/xml; charset=UTF-8", $xml),
+        );
+    }
+
+    /**
+     * @dataProvider dataProviderCreateCart
+     */
+    public function testCreateCart($contentType, $requestEntity)
+    {
+        // TODO Variations: Accept xml, no content;
+        // TODO Test with cartItems
+        $headers = array(
+            "HTTP_ACCEPT" => "application/json",
+            "CONTENT_TYPE" => $contentType,
+        );
+
+        $client = new Client($this->app, $headers);
+        $client->request("POST", "/cart/", array(), array(), $headers, $requestEntity);
+
+        $response = $client->getResponse();
+        $responseEntity = json_decode($response->getContent(), true);
+
+        $this->assertEquals(201, $response->getStatusCode());
+        $this->assertEquals("application/json", $response->headers->get("Content-Type"));
+        $this->assertArrayHasKey("cartId", $responseEntity);
+        $this->assertGreaterThan(0, strlen($responseEntity["cartId"]));
+        $this->assertEquals("/cart/{$responseEntity["cartId"]}", $response->headers->get("Location"));
+
+        $storedCart = $this->app["cart"]->fetch($responseEntity["cartId"]);
+        $this->assertEquals($responseEntity["cartId"], $storedCart->cartId);
+        $this->assertEquals('DateTime', get_class($storedCart->createdDate));
     }
 
     public function dataProviderGetCart()
@@ -97,7 +141,7 @@ XML;
 
         return array(
             array("application/json", "application/json", $json),
-//            array("application/xml", "application/xml", $xml),
+            array("application/xml", "application/xml", $xml),
             array("text/xml", "text/xml; charset=UTF-8", $xml),
         );
     }
@@ -147,7 +191,7 @@ XML;
 
         $this->assertEquals("406", $response->getStatusCode());
         $this->assertEquals("", $response->getContent());
-//        $this->assertFalse($response->headers->has("Content-Type"));
+        $this->assertFalse($response->headers->has("Content-Type"));
     }
 
     public function testNotModifiedReturns304()
@@ -180,7 +224,7 @@ XML;
 XML;
         return array(
             array("application/json", "application/json", $json),
-//            array("application/xml", "application/xml", $xml),
+            array("application/xml", "application/xml", $xml),
             array("text/xml", "text/xml; charset=UTF-8", $xml),
         );
     }
@@ -208,7 +252,8 @@ XML;
     {
         $jsonPost = '{"product":"\/product\/abc123","catalogId":1,"quantity":1,"price":"1.00","itemOptions":{"color":"Red","size":"XL"}}';
         $xmlPost  = <<<XML
-<cartItem>
+<?xml version="1.0" encoding="UTF-8"?>
+<CartItem>
   <product><![CDATA[/product/abc123]]></product>
   <catalogId>1</catalogId>
   <quantity>1</quantity>
@@ -217,13 +262,13 @@ XML;
     <itemOption name="color"><![CDATA[Red]]></itemOption>
     <itemOption name="size"><![CDATA[XL]]></itemOption>
   </itemOptions>
-</cartItem>
+</CartItem>
 XML;
 
         return array(
             array("application/json", $jsonPost),
             array("text/xml; charset=UTF-8", $xmlPost),
-//            array("application/xml", $xmlPost),
+            array("application/xml", $xmlPost),
         );
     }
 
@@ -232,6 +277,7 @@ XML;
      */
     public function testAddItemToCartJson($contentType, $cartItem)
     {
+        // TODO Verify cart saved correctly
         $headers = array(
             "HTTP_ACCEPT" => "application/json",
             "CONTENT_TYPE" => $contentType,
@@ -254,7 +300,8 @@ XML;
     {
         $jsonPost = '{"product":"\/product\/abc123","catalogId":1,"quantity":1,"price":"1.00","itemOptions":{"color":"Red","size":"XL"}}';
         $xmlPost  = <<<XML
-<cartItem>
+<?xml version="1.0" encoding="UTF-8"?>
+<CartItem>
   <product><![CDATA[/product/abc123]]></product>
   <catalogId>1</catalogId>
   <quantity>1</quantity>
@@ -263,7 +310,7 @@ XML;
     <itemOption name="color"><![CDATA[Red]]></itemOption>
     <itemOption name="size"><![CDATA[XL]]></itemOption>
   </itemOptions>
-</cartItem>
+</CartItem>
 XML;
 
         return array(
@@ -272,7 +319,7 @@ XML;
             array("text/xml; charset=UTF-8", "application/xml", $xmlPost),
             array("application/xml", "application/json", $jsonPost),
             array("application/xml", "text/xml; charset=UTF-8", $xmlPost),
-//            array("application/xml", "application/xml", $xmlPost),
+            array("application/xml", "application/xml", $xmlPost),
         );
     }
 
@@ -281,6 +328,7 @@ XML;
      */
     public function testAddItemToCartXml($accept, $contentType, $cartItem)
     {
+        // TODO Verify cart saved correctly
         $headers = array(
             "HTTP_ACCEPT" => $accept,
             "CONTENT_TYPE" => $contentType,
@@ -337,6 +385,6 @@ XML;
         $this->assertEquals($expectedResponse, $response->getContent());
     }
 
-    // Test invalidation
-    // Test validation
+    // Test cache invalidation
+    // Test request entity validation
 }

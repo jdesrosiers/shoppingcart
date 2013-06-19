@@ -16,7 +16,7 @@ class CreateCartResponse
 
     public function __construct($cartId)
     {
-        $this->cartItemId = $cartId;
+        $this->cartId = $cartId;
     }
 
     public function __get($name)

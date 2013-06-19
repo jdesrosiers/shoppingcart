@@ -2,6 +2,7 @@
 
 namespace JDesrosiers\Service\Cart\Types;
 
+use DateTime;
 use JMS\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -40,15 +41,22 @@ class Cart
 
     public function __construct(array $cart)
     {
-        $this->cartId = array_key_exists('cartId', $cart) ? $cart['cartId'] : substr(md5(microtime(true)), 0, 12);
-        $this->createdDate = $cart['createdDate'];
+        if (array_key_exists('cartId', $cart)) {
+            $this->cartId = $cart['cartId'];
+            $this->createdDate = $cart['createdDate'];
+        } else {
+            $this->cartId = substr(md5(microtime(true)), 0, 12);
+            $this->createdDate = new DateTime();
+        }
         
         if (array_key_exists('completedDate', $cart)) {
             $this->completedDate = $cart['completedDate'];
         }
 
-        foreach ($cart['cartItems'] as $cartItemId => $cartItem) {
-            $this->cartItems[$cartItemId] = new CartItem($cartItem);
+        if (array_key_exists('cartItems', $cart)) {
+            foreach ($cart['cartItems'] as $cartItemId => $cartItem) {
+                $this->cartItems[$cartItemId] = new CartItem($cartItem);
+            }
         }
     }
 

@@ -30,10 +30,8 @@ class CartControllerProvider implements ControllerProviderInterface
         $cart = $app["controllers_factory"];
 
         $cart->post("/", array($this, "createCart"));
-        $cart->get("/{cart}", array($this, "getCart"))->bind("cart");
-        $cart->post("/{cart}/cartItems", array($this, "addCartItem"));
-
-        $cart->convert("cart", array($this, "convertCart"));
+        $cart->get("/{cartId}", array($this, "getCart"))->bind("cart");
+        $cart->post("/{cartId}/cartItems", array($this, "addCartItem"));
 
         return $cart;
     }
@@ -71,7 +69,8 @@ class CartControllerProvider implements ControllerProviderInterface
 
     public function createCart(Request $request)
     {
-        $cart = $this->app["conneg"]->deserializeRequest($request, __NAMESPACE__ . "\Types\Cart");
+        $requestData = $this->app["conneg"]->deserializeRequest($request, "array");
+        $cart = new Cart($requestData);
         $this->validate($cart);
 
         if (!$this->app["cart"]->save($cart->cartId, $cart)) {
@@ -79,12 +78,14 @@ class CartControllerProvider implements ControllerProviderInterface
         }
 
         return $this->app["conneg"]->createResponse(new CreateCartResponse($cart->cartId), 201, array(
-           'Location' => $this->app["url_generator"]->generate("cart", array("cart" => $cart->cartId))
+           'Location' => $this->app["url_generator"]->generate("cart", array("cartId" => $cart->cartId))
         ));
     }
 
-    public function getCart(Cart $cart)
+    public function getCart($cartId)
     {
+        $cart = $this->convertCart($cartId);
+
         $response = $this->app["conneg"]->createResponse($cart);
         $response->setCache(array(
            "max_age" => 15,
@@ -95,8 +96,10 @@ class CartControllerProvider implements ControllerProviderInterface
         return $response;
     }
 
-    public function addCartItem(Request $request, Cart $cart)
+    public function addCartItem(Request $request, $cartId)
     {
+        $cart = $this->convertCart($cartId);
+
         $cartItem = $this->app["conneg"]->deserializeRequest($request, __NAMESPACE__ . "\Types\CartItem");
         $this->validate($cartItem);
 
@@ -107,7 +110,7 @@ class CartControllerProvider implements ControllerProviderInterface
         }
 
         return $this->app["conneg"]->createResponse(new AddToCartResponse($cartItemId), 303, array(
-           "Location" => $this->app["url_generator"]->generate("cart", array("cart" => $cart->cartId))
+           "Location" => $this->app["url_generator"]->generate("cart", array("cartId" => $cart->cartId))
         ));
     }
 }
