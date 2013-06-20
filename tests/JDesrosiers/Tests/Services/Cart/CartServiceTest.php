@@ -141,7 +141,7 @@ XML;
 
         return array(
             array("application/json", "application/json", $json),
-            array("application/xml", "application/xml", $xml),
+            array("application/xml", "text/xml; charset=UTF-8", $xml),
             array("text/xml", "text/xml; charset=UTF-8", $xml),
         );
     }
@@ -224,7 +224,7 @@ XML;
 XML;
         return array(
             array("application/json", "application/json", $json),
-            array("application/xml", "application/xml", $xml),
+            array("application/xml", "text/xml; charset=UTF-8", $xml),
             array("text/xml", "text/xml; charset=UTF-8", $xml),
         );
     }
@@ -319,7 +319,7 @@ XML;
             array("text/xml; charset=UTF-8", "application/xml", $xmlPost),
             array("application/xml", "application/json", $jsonPost),
             array("application/xml", "text/xml; charset=UTF-8", $xmlPost),
-            array("application/xml", "application/xml", $xmlPost),
+            array("application/xml", "text/xml; charset=UTF-8", $xmlPost),
         );
     }
 
