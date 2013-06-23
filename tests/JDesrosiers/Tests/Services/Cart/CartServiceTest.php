@@ -251,7 +251,7 @@ XML;
     public function dataProviderAddItemToCartJson()
     {
         $jsonPost = '{"product":"\/product\/abc123","catalogId":1,"quantity":1,"price":"1.00","itemOptions":{"color":"Red","size":"XL"}}';
-        $xmlPost  = <<<XML
+        $xmlPost = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
 <CartItem>
   <product><![CDATA[/product/abc123]]></product>
@@ -299,7 +299,7 @@ XML;
     public function dataProviderAddItemToCartXml()
     {
         $jsonPost = '{"product":"\/product\/abc123","catalogId":1,"quantity":1,"price":"1.00","itemOptions":{"color":"Red","size":"XL"}}';
-        $xmlPost  = <<<XML
+        $xmlPost = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
 <CartItem>
   <product><![CDATA[/product/abc123]]></product>
@@ -387,4 +387,37 @@ XML;
 
     // Test cache invalidation
     // Test request entity validation
+
+    public function testDeleteCart()
+    {
+        $headers = array(
+            "HTTP_ACCEPT" => "application/json",
+        );
+
+        $client = new Client($this->app, $headers);
+        $client->request("DELETE", "/cart/4ee8e29d45851");
+
+        $response = $client->getResponse();
+
+        $this->assertEquals("204", $response->getStatusCode());
+        $this->assertEquals("application/json", $response->headers->get("Content-Type"));
+        $this->assertEquals("", $response->getContent());
+        $this->assertFalse($this->app["cart"]->contains("4ee8e29d45851"));
+    }
+
+    public function testDeleteCartThatDoesntExist()
+    {
+        $headers = array(
+            "HTTP_ACCEPT" => "application/json",
+        );
+
+        $client = new Client($this->app, $headers);
+        $client->request("DELETE", "/cart/nosuchcart");
+
+        $response = $client->getResponse();
+
+        $this->assertEquals("404", $response->getStatusCode());
+        $this->assertEquals("application/json", $response->headers->get("Content-Type"));
+        $this->assertEquals('{"error":"Not Found","message":"Cart with ID [nosuchcart] was not found"}', $response->getContent());
+    }
 }

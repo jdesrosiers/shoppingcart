@@ -38,9 +38,6 @@ class ContentNegotiation
         $response = new Response($serializedContent, $status, $headers);
         $response->setVary(array('Accept', 'Accept-Encoding', 'Accept-Charset'));
         $response->setEtag(md5($serializedContent));
-        
-        // TODO: For 201 responses ETag should be the ETag of the newly created entity
-        // http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.2
 
         return $response;
     }

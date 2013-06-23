@@ -35,7 +35,7 @@ class ContentNegotiationServiceProvider implements ServiceProviderInterface
     {
         $app["conneg.serializationFormats"] = array("json", "xml", "yml");
         $app["conneg.deserializationFormats"] = array("json", "xml");
-        
+
         $app["conneg"] = $app->share(function () use ($app) {
             return new ContentNegotiation($app["request"], $app["conneg.serializer"], $app["conneg.serializationFormats"], $app["conneg.deserializationFormats"]);
         });

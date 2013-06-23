@@ -32,6 +32,7 @@ class CartControllerProvider implements ControllerProviderInterface
         $cart->post("/", array($this, "createCart"));
         $cart->get("/{cartId}", array($this, "getCart"))->bind("cart");
         $cart->post("/{cartId}/cartItems", array($this, "addCartItem"));
+        $cart->delete("/{cartId}", array($this, "deleteCart"));
 
         return $cart;
     }
@@ -73,12 +74,12 @@ class CartControllerProvider implements ControllerProviderInterface
         $cart = new Cart($requestData);
         $this->validate($cart);
 
-        if (!$this->app["cart"]->save($cart->cartId, $cart)) {
+        if ($this->app["cart"]->save($cart->cartId, $cart) === false) {
             throw new HttpException(500, "Failed to store cart");
         }
 
         return $this->app["conneg"]->createResponse(new CreateCartResponse($cart->cartId), 201, array(
-           'Location' => $this->app["url_generator"]->generate("cart", array("cartId" => $cart->cartId))
+            'Location' => $this->app["url_generator"]->generate("cart", array("cartId" => $cart->cartId))
         ));
     }
 
@@ -88,9 +89,9 @@ class CartControllerProvider implements ControllerProviderInterface
 
         $response = $this->app["conneg"]->createResponse($cart);
         $response->setCache(array(
-           "max_age" => 15,
-           "s_maxage" => 15,
-           "public" => true,
+            "max_age" => 15,
+            "s_maxage" => 15,
+            "public" => true,
         ));
 
         return $response;
@@ -105,12 +106,23 @@ class CartControllerProvider implements ControllerProviderInterface
 
         $cartItemId = $cart->addCartItem($cartItem);
 
-        if (!$this->app["cart"]->save($cart->cartId, $cart)) {
+        if ($this->app["cart"]->save($cart->cartId, $cart) === false) {
             throw new HttpException(500, "Failed to store cart");
         }
 
         return $this->app["conneg"]->createResponse(new AddToCartResponse($cartItemId), 303, array(
-           "Location" => $this->app["url_generator"]->generate("cart", array("cartId" => $cart->cartId))
+            "Location" => $this->app["url_generator"]->generate("cart", array("cartId" => $cart->cartId))
         ));
+    }
+
+    public function deleteCart($cartId)
+    {
+        $cart = $this->convertCart($cartId);
+
+        if ($this->app["cart"]->delete($cart->cartId) === false) {
+            throw new HttpException(500, "Failed to store cart");
+        }
+
+        return $this->app["conneg"]->createResponse("", 204);
     }
 }
