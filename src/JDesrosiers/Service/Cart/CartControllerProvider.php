@@ -31,6 +31,7 @@ class CartControllerProvider implements ControllerProviderInterface
 
         $cart->post("/", array($this, "createCart"));
         $cart->get("/{cartId}", array($this, "getCart"))->bind("cart");
+        $cart->put("/{cartId}", array($this, "putCart"));
         $cart->post("/{cartId}/cartItems", array($this, "addCartItem"));
         $cart->delete("/{cartId}", array($this, "deleteCart"));
 
@@ -95,6 +96,26 @@ class CartControllerProvider implements ControllerProviderInterface
         ));
 
         return $response;
+    }
+
+    public function putCart(Request $request, $cartId)
+    {
+        $cart = $this->app["conneg"]->deserializeRequest($request, __NAMESPACE__ . "\Types\Cart");
+        $this->validate($cart);
+        
+        $cartExists = $this->app["cart"]->contains($cartId);
+
+        if ($this->app["cart"]->save($cart->cartId, $cart) === false) {
+            throw new HttpException(500, "Failed to store cart");
+        }
+
+        if ($cartExists) {
+            return new Response("", 204);
+        } else {
+            return new Response("", 201, array(
+                'Location' => $this->app["url_generator"]->generate("cart", array("cartId" => $cart->cartId)),
+            ));
+        }
     }
 
     public function addCartItem(Request $request, $cartId)

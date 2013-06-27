@@ -32,7 +32,7 @@ class Cart
     protected $completedDate;
 
     /**
-     * @Serializer\Type("array<CartItem>")
+     * @Serializer\Type("array<JDesrosiers\Service\Cart\Types\CartItem>")
      * @Serializer\XmlList(inline = false, entry = "cartItem")
      * @Assert\Type("array")
      * @Assert\NotNull()

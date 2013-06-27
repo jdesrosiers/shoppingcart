@@ -420,4 +420,132 @@ XML;
         $this->assertEquals("application/json", $response->headers->get("Content-Type"));
         $this->assertEquals('{"error":"Not Found","message":"Cart with ID [nosuchcart] was not found"}', $response->getContent());
     }
+    
+    public function dataProviderPutCreateCart()
+    {
+        $json = '{"cartId":"9d458514ee8e2","createdDate":"2002-10-10T12:00:00-0500","cartItems":{"4d45851e8e29":{"cartItemId":"4d45851e8e29","product":"\/product\/abc123","catalogId":1,"quantity":1,"price":"1.00","itemOptions":{"color":"Red","size":"XL"}},"5851e84d4e29":{"cartItemId":"5851e84d4e29","product":"\/product\/abc123","catalogId":1,"quantity":1,"price":"1.00","itemOptions":{"color":"Blue","size":"XL"}}}}';
+        $xml = <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<Cart>
+  <cartId><![CDATA[9d458514ee8e2]]></cartId>
+  <createdDate><![CDATA[2002-10-10T12:00:00-0500]]></createdDate>
+  <cartItems>
+    <cartItem>
+      <cartItemId><![CDATA[4d45851e8e29]]></cartItemId>
+      <product><![CDATA[/product/abc123]]></product>
+      <catalogId>1</catalogId>
+      <quantity>1</quantity>
+      <price><![CDATA[1.00]]></price>
+      <itemOptions>
+        <itemOption name="color"><![CDATA[Red]]></itemOption>
+        <itemOption name="size"><![CDATA[XL]]></itemOption>
+      </itemOptions>
+    </cartItem>
+    <cartItem>
+      <cartItemId><![CDATA[5851e84d4e29]]></cartItemId>
+      <product><![CDATA[/product/abc123]]></product>
+      <catalogId>1</catalogId>
+      <quantity>1</quantity>
+      <price><![CDATA[1.00]]></price>
+      <itemOptions>
+        <itemOption name="color"><![CDATA[Blue]]></itemOption>
+        <itemOption name="size"><![CDATA[XL]]></itemOption>
+      </itemOptions>
+    </cartItem>
+  </cartItems>
+</Cart>
+
+XML;
+
+        return array(
+            array("application/json", $json),
+            array("application/xml", $xml),
+            array("text/xml", $xml),
+        );
+    }
+
+    /**
+     * @dataProvider dataProviderPutCreateCart
+     */
+    public function testPutCreateCart($contentType, $content)
+    {
+        $headers = array(
+            "HTTP_ACCEPT" => "application/json",
+            "CONTENT_TYPE" => $contentType,
+        );
+
+        $client = new Client($this->app, $headers);
+        $client->request("PUT", "/cart/9d458514ee8e2", array(), array(), $headers, $content);
+
+        $response = $client->getResponse();
+
+        $this->assertEquals("201", $response->getStatusCode());
+        $this->assertEquals("application/json", $response->headers->get("Content-Type"));
+        $this->assertEquals('', $response->getContent());
+        $this->assertTrue($this->app["cart"]->contains("9d458514ee8e2"));
+    }
+    
+    public function dataProviderPutUpdateCart()
+    {
+        $json = '{"cartId":"4ee8e29d45851","createdDate":"2002-10-10T12:00:00-0500","cartItems":{"4d45851e8e29":{"cartItemId":"4d45851e8e29","product":"\/product\/abc123","catalogId":1,"quantity":1,"price":"1.00","itemOptions":{"color":"Red","size":"XL"}},"5851e84d4e29":{"cartItemId":"5851e84d4e29","product":"\/product\/abc123","catalogId":1,"quantity":1,"price":"1.00","itemOptions":{"color":"Blue","size":"XL"}}}}';
+        $xml = <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<Cart>
+  <cartId><![CDATA[4ee8e29d45851]]></cartId>
+  <createdDate><![CDATA[2002-10-10T12:00:00-0500]]></createdDate>
+  <cartItems>
+    <cartItem>
+      <cartItemId><![CDATA[4d45851e8e29]]></cartItemId>
+      <product><![CDATA[/product/abc123]]></product>
+      <catalogId>1</catalogId>
+      <quantity>1</quantity>
+      <price><![CDATA[1.00]]></price>
+      <itemOptions>
+        <itemOption name="color"><![CDATA[Red]]></itemOption>
+        <itemOption name="size"><![CDATA[XL]]></itemOption>
+      </itemOptions>
+    </cartItem>
+    <cartItem>
+      <cartItemId><![CDATA[5851e84d4e29]]></cartItemId>
+      <product><![CDATA[/product/abc123]]></product>
+      <catalogId>1</catalogId>
+      <quantity>1</quantity>
+      <price><![CDATA[1.00]]></price>
+      <itemOptions>
+        <itemOption name="color"><![CDATA[Blue]]></itemOption>
+        <itemOption name="size"><![CDATA[XL]]></itemOption>
+      </itemOptions>
+    </cartItem>
+  </cartItems>
+</Cart>
+
+XML;
+
+        return array(
+            array("application/json", $json),
+            array("application/xml", $xml),
+            array("text/xml", $xml),
+        );
+    }
+
+    /**
+     * @dataProvider dataProviderPutUpdateCart
+     */
+    public function testPutUpdateCart($contentType, $content)
+    {
+        $headers = array(
+            "HTTP_ACCEPT" => "application/json",
+            "CONTENT_TYPE" => $contentType,
+        );
+
+        $client = new Client($this->app, $headers);
+        $client->request("PUT", "/cart/4ee8e29d45851", array(), array(), $headers, $content);
+
+        $response = $client->getResponse();
+
+        $this->assertEquals("204", $response->getStatusCode());
+        $this->assertEquals("application/json", $response->headers->get("Content-Type"));
+        $this->assertEquals("", $response->getContent());
+        $this->assertTrue($this->app["cart"]->contains("4ee8e29d45851"));
+    }
 }
