@@ -29,6 +29,7 @@ $app->register(new ContentNegotiationServiceProvider(), array(
     "conneg.serializer" => $app["serializer"],
     "conneg.serializationFormats" => array("json", "xml", "yml"),
     "conneg.deserializationFormats" => array("json", "xml"),
+    "conneg.defaultContentType" => "json",
 ));
 $app->register(new ValidationServiceProvider(), array(
     "validator.srcDir" => dirname(__DIR__) . "/vendor/symfony/validator",
