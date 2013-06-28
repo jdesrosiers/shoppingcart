@@ -17,17 +17,34 @@ ContentNegotiation module
 Silex Extensions
 ================
 
-* ContentNegotiationServiceProvider
-* JmsSerializerServiceProvider
-* ValidationServiceProvider
+ContentNegotiationServiceProvider
+---------------------------------
+
+CorsServiceProvider
+-------------------
+The CorsServiceProvider provides a service "cors" that can be added as after middleware to the Application, a
+ControllerCollection, or a Route.  It also goes through all routes and generates all necessary OPTIONS methods.  You
+can set values for all of the CORS response headers
+
+ * cors.allowOrigin
+ * cors.allowMethods
+ * cors.allowHeaders
+ * cors.maxAge
+ * cors.allowCredentials
+ * cors.exposeHeaders
+
+JmsSerializerServiceProvider
+----------------------------
+
+ValidationServiceProvider
+-------------------------
 
 TODO List
 =========
 
 * Checkout the SecurityServiceProvider.  What are it's capabilities and limitations?  What other options are there?
 * Checkout the TranslationServiceProvier.  What are it's capabilities and limitations?  What other options are there?
-* Explore json hyper-schema as a way of satisfying the HATEOAS
-* Create Silex middleware for CORS support
+* Explore json hyper-schema as a way of satisfying the HATEOAS requirement of REST
 * Create Silex middleware for jsonp support
 * Explore strategies for deploying and maintaining more than one version of an API
 * Explore swagger/swagger-ui as a means of documenting the API

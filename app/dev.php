@@ -1,6 +1,7 @@
 <?php
 
 use JDesrosiers\Silex\Provider\ContentNegotiationServiceProvider;
+use JDesrosiers\Silex\Provider\CorsServiceProvider;
 use JDesrosiers\Silex\Provider\JmsSerializerServiceProvider;
 use JDesrosiers\Silex\Provider\ValidationServiceProvider;
 use Monolog\Logger;
@@ -49,6 +50,9 @@ $app->register(new HttpCacheServiceProvider(), array(
         "allow_reload" => true,
         "allow_revalidate" => true,
     ),
+));
+$app->register(new CorsServiceProvider(), array(
+    "cors.allowOrigin" => "http://petstore.swagger.wordnik.com",
 ));
 
 return $app;

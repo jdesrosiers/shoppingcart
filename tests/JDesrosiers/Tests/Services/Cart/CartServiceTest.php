@@ -144,7 +144,7 @@ XML;
     public function testGetCart($accept, $expectedContentType, $expectedResponse)
     {
         $headers = array(
-            "HTTP_ACCEPT" => $accept
+            "HTTP_ACCEPT" => $accept,
         );
 
         $client = new Client($this->app, $headers);
@@ -527,5 +527,22 @@ XML;
         $this->assertEquals("application/json", $response->headers->get("Content-Type"));
         $this->assertEquals("", $response->getContent());
         $this->assertTrue($this->app["cart"]->contains("4ee8e29d45851"));
+    }
+
+    public function testOptionsMethod()
+    {
+        $headers = array(
+            "HTTP_ACCEPT" => "application/json",
+        );
+
+        $client = new Client($this->app, $headers);
+        $client->request("OPTIONS", "/cart/4ee8e29d45851");
+
+        $response = $client->getResponse();
+
+        $this->assertEquals("204", $response->getStatusCode());
+        $this->assertEquals("application/json", $response->headers->get("Content-Type"));
+        $this->assertEquals(array("GET", "PUT", "DELETE"), $response->headers->get("Allow", null, false));
+        $this->assertEquals("", $response->getContent());
     }
 }

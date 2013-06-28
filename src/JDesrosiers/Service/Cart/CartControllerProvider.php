@@ -35,6 +35,8 @@ class CartControllerProvider implements ControllerProviderInterface
         $cart->post("/{cartId}/cartItems", array($this, "addCartItem"));
         $cart->delete("/{cartId}", array($this, "deleteCart"));
 
+        $cart->after($app["cors"]);
+
         return $cart;
     }
 
