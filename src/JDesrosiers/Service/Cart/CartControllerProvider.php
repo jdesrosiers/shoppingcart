@@ -13,7 +13,16 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Swagger\Annotations as SWG;
 
+/**
+ * @SWG\Resource(
+ *     apiVersion="0.1",
+ *     swaggerVersion="1.1",
+ *     resourcePath="/cart",
+ *     basePath="http://localhost:8000"
+ * )
+ */
 class CartControllerProvider implements ControllerProviderInterface
 {
     protected $app;
@@ -34,8 +43,6 @@ class CartControllerProvider implements ControllerProviderInterface
         $cart->put("/{cartId}", array($this, "putCart"));
         $cart->post("/{cartId}/cartItems", array($this, "addCartItem"));
         $cart->delete("/{cartId}", array($this, "deleteCart"));
-
-        $cart->after($app["cors"]);
 
         return $cart;
     }
@@ -71,6 +78,29 @@ class CartControllerProvider implements ControllerProviderInterface
         return true;
     }
 
+    /**
+     * @SWG\Api(
+     *     path="/cart/",
+     *     @SWG\Operations(
+     *         @SWG\Operation(httpMethod="POST", summary="Create a new cart", responseClass="CreateCartResponse", nickname="DeleteCart",
+     *             @SWG\ErrorResponses(
+     *                 @SWG\ErrorResponse(code="404", reason="Cart not found"),
+     *                 @SWG\ErrorResponse(code="400", reason="Invalid input")
+     *             ),
+     *             @SWG\Parameters(
+     *                 @SWG\Parameter(
+     *                     name="cart",
+     *                     description="Cart data",
+     *                     paramType="body",
+     *                     required="true",
+     *                     allowMultiple="false",
+     *                     dataType="Cart"
+     *                 )
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function createCart(Request $request)
     {
         $requestData = $this->app["conneg"]->deserializeRequest($request, "array");
@@ -86,6 +116,28 @@ class CartControllerProvider implements ControllerProviderInterface
         ));
     }
 
+    /**
+     * @SWG\Api(
+     *     path="/cart/{cartId}",
+     *     @SWG\Operations(
+     *         @SWG\Operation(httpMethod="GET", summary="Find cart by ID", responseClass="Cart", nickname="GetCart",
+     *             @SWG\ErrorResponses(
+     *                 @SWG\ErrorResponse(code="404", reason="Cart not found")
+     *             ),
+     *             @SWG\Parameters(
+     *                 @SWG\Parameter(
+     *                     name="cartId",
+     *                     description="ID of cart that needs to be fetched",
+     *                     paramType="path",
+     *                     required="true",
+     *                     allowMultiple="false",
+     *                     dataType="string"
+     *                 )
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function getCart($cartId)
     {
         $cart = $this->convertCart($cartId);
@@ -100,6 +152,36 @@ class CartControllerProvider implements ControllerProviderInterface
         return $response;
     }
 
+    /**
+     * @SWG\Api(
+     *     path="/cart/{cartId}",
+     *     @SWG\Operations(
+     *         @SWG\Operation(httpMethod="PUT", summary="Create or update a cart", nickname="PutCart",
+     *             @SWG\ErrorResponses(
+     *                 @SWG\ErrorResponse(code="400", reason="Invalid input")
+     *             ),
+     *             @SWG\Parameters(
+     *                 @SWG\Parameter(
+     *                     name="cartId",
+     *                     description="ID of cart that needs to be fetched",
+     *                     paramType="path",
+     *                     required="true",
+     *                     allowMultiple="false",
+     *                     dataType="string"
+     *                 ),
+     *                 @SWG\Parameter(
+     *                     name="cart",
+     *                     description="Cart data",
+     *                     paramType="body",
+     *                     required="true",
+     *                     allowMultiple="false",
+     *                     dataType="Cart"
+     *                 )
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function putCart(Request $request, $cartId)
     {
         $cart = $this->app["conneg"]->deserializeRequest($request, __NAMESPACE__ . "\Types\Cart");
@@ -120,6 +202,36 @@ class CartControllerProvider implements ControllerProviderInterface
         }
     }
 
+    /**
+     * @SWG\Api(
+     *     path="/cart/{cartId}/cartItems",
+     *     @SWG\Operations(
+     *         @SWG\Operation(httpMethod="POST", summary="Add an item to a cart", nickname="AddToCart",
+     *             @SWG\ErrorResponses(
+     *                 @SWG\ErrorResponse(code="404", reason="Cart not found")
+     *             ),
+     *             @SWG\Parameters(
+     *                 @SWG\Parameter(
+     *                     name="cartId",
+     *                     description="ID of cart that the item will be added to",
+     *                     paramType="path",
+     *                     required="true",
+     *                     allowMultiple="false",
+     *                     dataType="string"
+     *                 ),
+     *                 @SWG\Parameter(
+     *                     name="cartItem",
+     *                     description="The item to be added to the cart",
+     *                     paramType="body",
+     *                     required="true",
+     *                     allowMultiple="false",
+     *                     dataType="CartItem"
+     *                 )
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function addCartItem(Request $request, $cartId)
     {
         $cart = $this->convertCart($cartId);
@@ -138,6 +250,28 @@ class CartControllerProvider implements ControllerProviderInterface
         ));
     }
 
+    /**
+     * @SWG\Api(
+     *     path="/cart/{cartId}",
+     *     @SWG\Operations(
+     *         @SWG\Operation(httpMethod="DELETE", summary="Delete cart by ID", nickname="DeleteCart",
+     *             @SWG\ErrorResponses(
+     *                 @SWG\ErrorResponse(code="404", reason="Cart not found")
+     *             ),
+     *             @SWG\Parameters(
+     *                 @SWG\Parameter(
+     *                     name="cartId",
+     *                     description="ID of cart that needs to be deleted",
+     *                     paramType="path",
+     *                     required="true",
+     *                     allowMultiple="false",
+     *                     dataType="string"
+     *                 )
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function deleteCart($cartId)
     {
         $cart = $this->convertCart($cartId);

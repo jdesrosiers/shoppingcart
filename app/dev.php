@@ -3,6 +3,7 @@
 use JDesrosiers\Silex\Provider\ContentNegotiationServiceProvider;
 use JDesrosiers\Silex\Provider\CorsServiceProvider;
 use JDesrosiers\Silex\Provider\JmsSerializerServiceProvider;
+use JDesrosiers\Silex\Provider\SwaggerServiceProvider;
 use JDesrosiers\Silex\Provider\ValidationServiceProvider;
 use Monolog\Logger;
 use Silex\Application;
@@ -53,6 +54,10 @@ $app->register(new HttpCacheServiceProvider(), array(
 ));
 $app->register(new CorsServiceProvider(), array(
     "cors.allowOrigin" => "http://petstore.swagger.wordnik.com",
+));
+$app->register(new SwaggerServiceProvider(), array(
+    "swagger.srcDir" => dirname(__DIR__) . "/vendor/zircote/swagger-php/library",
+    "swagger.servicePath" => dirname(__DIR__) . "/src/JDesrosiers/Service",
 ));
 
 return $app;

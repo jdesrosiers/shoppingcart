@@ -13,6 +13,8 @@ Features
 Typical GET, POST, PUT, DELETE operations
 POST 303 pattern
 ContentNegotiation module
+CORS support
+Swagger API definition using annotations
 
 Silex Extensions
 ================
@@ -26,15 +28,21 @@ The CorsServiceProvider provides a service "cors" that can be added as after mid
 ControllerCollection, or a Route.  It also goes through all routes and generates all necessary OPTIONS methods.  You
 can set values for all of the CORS response headers
 
- * cors.allowOrigin
- * cors.allowMethods
- * cors.allowHeaders
- * cors.maxAge
- * cors.allowCredentials
- * cors.exposeHeaders
+ * `cors.allowOrigin`
+ * `cors.allowMethods`
+ * `cors.maxAge`
+ * `cors.allowCredentials`
+ * `cors.exposeHeaders`
 
 JmsSerializerServiceProvider
 ----------------------------
+
+SwaggerServiceProvider
+----------------------
+The swagger service adds a route that will return the swagger definition in a way that swagger-ui understands.
+
+ * `swagger.servicePath` Tell swagger where to look for annotations
+ * `swagger.apiDocPath` Defaults to /api-docs.json
 
 ValidationServiceProvider
 -------------------------
@@ -47,4 +55,3 @@ TODO List
 * Explore json hyper-schema as a way of satisfying the HATEOAS requirement of REST
 * Create Silex middleware for jsonp support
 * Explore strategies for deploying and maintaining more than one version of an API
-* Explore swagger/swagger-ui as a means of documenting the API

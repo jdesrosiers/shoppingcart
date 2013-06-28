@@ -10,5 +10,8 @@ $app = require __DIR__ . "/../app/dev.php";
 $app->register(new CartServiceProvider());
 $app->mount("/cart", new CartControllerProvider());
 
+// Add CORS support
+$app->after($app["cors"]);
+
 // Handle request
 $app["http_cache"]->run();

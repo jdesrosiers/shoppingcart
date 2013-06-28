@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "92324b3029d7adc8fdf2efc8eb15540a",
+    "hash": "e7afe483aff851eb4406b1ff2d463d0c",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -602,12 +602,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/fabpot/Silex.git",
-                "reference": "a6dde11a6494e2c116326ca91b0066475e825a52"
+                "reference": "d877687625a51b1a1ed311b95e158148aa2d68ca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Silex/zipball/a6dde11a6494e2c116326ca91b0066475e825a52",
-                "reference": "a6dde11a6494e2c116326ca91b0066475e825a52",
+                "url": "https://api.github.com/repos/fabpot/Silex/zipball/d877687625a51b1a1ed311b95e158148aa2d68ca",
+                "reference": "d877687625a51b1a1ed311b95e158148aa2d68ca",
                 "shasum": ""
             },
             "require": {
@@ -676,7 +676,7 @@
             "keywords": [
                 "microframework"
             ],
-            "time": "2013-06-06 07:02:30"
+            "time": "2013-06-19 14:39:26"
         },
         {
             "name": "symfony/debug",
@@ -1130,6 +1130,62 @@
             "description": "Symfony Validator Component",
             "homepage": "http://symfony.com",
             "time": "2013-06-10 16:23:25"
+        },
+        {
+            "name": "zircote/swagger-php",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zircote/swagger-php.git",
+                "reference": "23e00919fdad2377d5793d565c86e1577361ae7f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zircote/swagger-php/zipball/23e00919fdad2377d5793d565c86e1577361ae7f",
+                "reference": "23e00919fdad2377d5793d565c86e1577361ae7f",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/common": "*",
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "symfony/finder": "*",
+                "symfony/process": "*"
+            },
+            "bin": [
+                "bin/swagger"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Swagger": "library"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache2"
+            ],
+            "authors": [
+                {
+                    "name": "Robert Allen",
+                    "email": "zircote@gmail.com",
+                    "homepage": "http://www.zircote.com"
+                },
+                {
+                    "name": "Bob Fanger",
+                    "email": "bfanger@gmail.com",
+                    "homepage": "http://bfanger.nl"
+                }
+            ],
+            "description": "Swagger-PHP library implementing the swagger.wordnik.com specification to describe web services, operations/actions and models enabling a uniform means of producing, consuming, and visualizing RESTful web services.",
+            "homepage": "https://github.com/zircote/swagger-php/",
+            "keywords": [
+                "api",
+                "json",
+                "service discovery"
+            ],
+            "time": "2013-06-12 20:21:27"
         }
     ],
     "packages-dev": [
@@ -1651,7 +1707,8 @@
     ],
     "minimum-stability": "stable",
     "stability-flags": {
-        "silex/silex": 20
+        "silex/silex": 20,
+        "zircote/swagger-php": 20
     },
     "platform": [
 
