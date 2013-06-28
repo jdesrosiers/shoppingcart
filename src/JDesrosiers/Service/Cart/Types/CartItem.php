@@ -25,26 +25,10 @@ class CartItem
     /**
      * @Serializer\Type("integer")
      * @Assert\Type("integer")
-     * @Assert\Range(min = 0)
-     * @Assert\NotNull()
-     */
-    protected $catalogId;
-
-    /**
-     * @Serializer\Type("integer")
-     * @Assert\Type("integer")
      * @Assert\Range(min = 1)
      * @Assert\NotNull()
      */
     protected $quantity;
-
-    /**
-     * @Serializer\Type("string")
-     * @Assert\Type("numeric")
-     * @Assert\Range(min = 0.99)
-     * @Assert\NotNull()
-     */
-    protected $price;
 
     /**
      * @Serializer\Type("array<string,string>")
@@ -61,9 +45,7 @@ class CartItem
 
         $this->cartItemId = $cartItem['cartItemId'];
         $this->product = $cartItem['product'];
-        $this->catalogId = $cartItem['catalogId'];
         $this->quantity = $cartItem['quantity'];
-        $this->price = $cartItem['price'];
         $this->itemOptions = $cartItem['itemOptions'];
     }
 

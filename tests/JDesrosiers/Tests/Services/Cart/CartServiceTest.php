@@ -31,9 +31,7 @@ class CartServiceTest extends \PHPUnit_Framework_TestCase
                 "4d45851e8e29" => array(
                     "cartItemId" => "4d45851e8e29",
                     "product" => "/product/abc123",
-                    "catalogId" => 1,
                     "quantity" => 1,
-                    "price" => "1.00",
                     "itemOptions" => array(
                         "color" => "Red",
                         "size" => "XL",
@@ -42,9 +40,7 @@ class CartServiceTest extends \PHPUnit_Framework_TestCase
                 "5851e84d4e29" => array(
                     "cartItemId" => "5851e84d4e29",
                     "product" => "/product/abc123",
-                    "catalogId" => 1,
                     "quantity" => 1,
-                    "price" => "1.00",
                     "itemOptions" => array(
                         "color" => "Blue",
                         "size" => "XL",
@@ -105,7 +101,7 @@ XML;
 
     public function dataProviderGetCart()
     {
-        $json = '{"cartId":"4ee8e29d45851","createdDate":"2002-10-10T12:00:00-0500","cartItems":{"4d45851e8e29":{"cartItemId":"4d45851e8e29","product":"\/product\/abc123","catalogId":1,"quantity":1,"price":"1.00","itemOptions":{"color":"Red","size":"XL"}},"5851e84d4e29":{"cartItemId":"5851e84d4e29","product":"\/product\/abc123","catalogId":1,"quantity":1,"price":"1.00","itemOptions":{"color":"Blue","size":"XL"}}}}';
+        $json = '{"cartId":"4ee8e29d45851","createdDate":"2002-10-10T12:00:00-0500","cartItems":{"4d45851e8e29":{"cartItemId":"4d45851e8e29","product":"\/product\/abc123","quantity":1,"itemOptions":{"color":"Red","size":"XL"}},"5851e84d4e29":{"cartItemId":"5851e84d4e29","product":"\/product\/abc123","quantity":1,"itemOptions":{"color":"Blue","size":"XL"}}}}';
         $xml = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
 <Cart>
@@ -115,9 +111,7 @@ XML;
     <cartItem>
       <cartItemId><![CDATA[4d45851e8e29]]></cartItemId>
       <product><![CDATA[/product/abc123]]></product>
-      <catalogId>1</catalogId>
       <quantity>1</quantity>
-      <price><![CDATA[1.00]]></price>
       <itemOptions>
         <itemOption name="color"><![CDATA[Red]]></itemOption>
         <itemOption name="size"><![CDATA[XL]]></itemOption>
@@ -126,9 +120,7 @@ XML;
     <cartItem>
       <cartItemId><![CDATA[5851e84d4e29]]></cartItemId>
       <product><![CDATA[/product/abc123]]></product>
-      <catalogId>1</catalogId>
       <quantity>1</quantity>
-      <price><![CDATA[1.00]]></price>
       <itemOptions>
         <itemOption name="color"><![CDATA[Blue]]></itemOption>
         <itemOption name="size"><![CDATA[XL]]></itemOption>
@@ -198,7 +190,7 @@ XML;
     {
         $headers = array(
             "HTTP_ACCEPT" => "application/json",
-            "HTTP_IF_NONE_MATCH" => '"2cd1072ab4fe2e1a1dcd05d4731e19c5"',
+            "HTTP_IF_NONE_MATCH" => '"49fe5e81e4d90156fbef0a3ae347777f"',
         );
 
         $client = new Client($this->app['http_cache'], $headers);
@@ -250,14 +242,12 @@ XML;
 
     public function dataProviderAddItemToCartJson()
     {
-        $jsonPost = '{"product":"\/product\/abc123","catalogId":1,"quantity":1,"price":"1.00","itemOptions":{"color":"Red","size":"XL"}}';
+        $jsonPost = '{"product":"\/product\/abc123","quantity":1,"itemOptions":{"color":"Red","size":"XL"}}';
         $xmlPost = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
 <CartItem>
   <product><![CDATA[/product/abc123]]></product>
-  <catalogId>1</catalogId>
   <quantity>1</quantity>
-  <price><![CDATA[1.00]]></price>
   <itemOptions>
     <itemOption name="color"><![CDATA[Red]]></itemOption>
     <itemOption name="size"><![CDATA[XL]]></itemOption>
@@ -298,14 +288,12 @@ XML;
 
     public function dataProviderAddItemToCartXml()
     {
-        $jsonPost = '{"product":"\/product\/abc123","catalogId":1,"quantity":1,"price":"1.00","itemOptions":{"color":"Red","size":"XL"}}';
+        $jsonPost = '{"product":"\/product\/abc123","quantity":1,"itemOptions":{"color":"Red","size":"XL"}}';
         $xmlPost = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
 <CartItem>
   <product><![CDATA[/product/abc123]]></product>
-  <catalogId>1</catalogId>
   <quantity>1</quantity>
-  <price><![CDATA[1.00]]></price>
   <itemOptions>
     <itemOption name="color"><![CDATA[Red]]></itemOption>
     <itemOption name="size"><![CDATA[XL]]></itemOption>
@@ -423,7 +411,7 @@ XML;
     
     public function dataProviderPutCreateCart()
     {
-        $json = '{"cartId":"9d458514ee8e2","createdDate":"2002-10-10T12:00:00-0500","cartItems":{"4d45851e8e29":{"cartItemId":"4d45851e8e29","product":"\/product\/abc123","catalogId":1,"quantity":1,"price":"1.00","itemOptions":{"color":"Red","size":"XL"}},"5851e84d4e29":{"cartItemId":"5851e84d4e29","product":"\/product\/abc123","catalogId":1,"quantity":1,"price":"1.00","itemOptions":{"color":"Blue","size":"XL"}}}}';
+        $json = '{"cartId":"9d458514ee8e2","createdDate":"2002-10-10T12:00:00-0500","cartItems":{"4d45851e8e29":{"cartItemId":"4d45851e8e29","product":"\/product\/abc123","quantity":1,"itemOptions":{"color":"Red","size":"XL"}},"5851e84d4e29":{"cartItemId":"5851e84d4e29","product":"\/product\/abc123","quantity":1,"itemOptions":{"color":"Blue","size":"XL"}}}}';
         $xml = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
 <Cart>
@@ -433,9 +421,7 @@ XML;
     <cartItem>
       <cartItemId><![CDATA[4d45851e8e29]]></cartItemId>
       <product><![CDATA[/product/abc123]]></product>
-      <catalogId>1</catalogId>
       <quantity>1</quantity>
-      <price><![CDATA[1.00]]></price>
       <itemOptions>
         <itemOption name="color"><![CDATA[Red]]></itemOption>
         <itemOption name="size"><![CDATA[XL]]></itemOption>
@@ -444,9 +430,7 @@ XML;
     <cartItem>
       <cartItemId><![CDATA[5851e84d4e29]]></cartItemId>
       <product><![CDATA[/product/abc123]]></product>
-      <catalogId>1</catalogId>
       <quantity>1</quantity>
-      <price><![CDATA[1.00]]></price>
       <itemOptions>
         <itemOption name="color"><![CDATA[Blue]]></itemOption>
         <itemOption name="size"><![CDATA[XL]]></itemOption>
@@ -487,7 +471,7 @@ XML;
     
     public function dataProviderPutUpdateCart()
     {
-        $json = '{"cartId":"4ee8e29d45851","createdDate":"2002-10-10T12:00:00-0500","cartItems":{"4d45851e8e29":{"cartItemId":"4d45851e8e29","product":"\/product\/abc123","catalogId":1,"quantity":1,"price":"1.00","itemOptions":{"color":"Red","size":"XL"}},"5851e84d4e29":{"cartItemId":"5851e84d4e29","product":"\/product\/abc123","catalogId":1,"quantity":1,"price":"1.00","itemOptions":{"color":"Blue","size":"XL"}}}}';
+        $json = '{"cartId":"4ee8e29d45851","createdDate":"2002-10-10T12:00:00-0500","cartItems":{"4d45851e8e29":{"cartItemId":"4d45851e8e29","product":"\/product\/abc123","quantity":1,"itemOptions":{"color":"Red","size":"XL"}},"5851e84d4e29":{"cartItemId":"5851e84d4e29","product":"\/product\/abc123","quantity":1,"itemOptions":{"color":"Blue","size":"XL"}}}}';
         $xml = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
 <Cart>
@@ -497,9 +481,7 @@ XML;
     <cartItem>
       <cartItemId><![CDATA[4d45851e8e29]]></cartItemId>
       <product><![CDATA[/product/abc123]]></product>
-      <catalogId>1</catalogId>
       <quantity>1</quantity>
-      <price><![CDATA[1.00]]></price>
       <itemOptions>
         <itemOption name="color"><![CDATA[Red]]></itemOption>
         <itemOption name="size"><![CDATA[XL]]></itemOption>
@@ -508,9 +490,7 @@ XML;
     <cartItem>
       <cartItemId><![CDATA[5851e84d4e29]]></cartItemId>
       <product><![CDATA[/product/abc123]]></product>
-      <catalogId>1</catalogId>
       <quantity>1</quantity>
-      <price><![CDATA[1.00]]></price>
       <itemOptions>
         <itemOption name="color"><![CDATA[Blue]]></itemOption>
         <itemOption name="size"><![CDATA[XL]]></itemOption>
