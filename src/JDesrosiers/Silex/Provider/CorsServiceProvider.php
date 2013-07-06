@@ -30,7 +30,7 @@ class CorsServiceProvider implements ServiceProviderInterface
     {
         $app["cors.allowOrigin"] = "*";
         $app["cors.allowMethods"] = "*";
-        $app["cors.allowHeaders"] = "*";
+//        $app["cors.allowHeaders"] = "*";
         $app["cors.maxAge"] = null;
         $app["cors.allowCredentials"] = false;
         $app["cors.exposeHeaders"] = null;
@@ -50,7 +50,7 @@ class CorsServiceProvider implements ServiceProviderInterface
 
                     if ($request->headers->has("Access-Control-Request-Headers")) {
                         // TODO: Allow cors.allowHeaders to be set and use it to validate the request
-                        $response->headers->set("Access-Control-Allow-Headers", "*");
+                        $response->headers->set("Access-Control-Allow-Headers", $request->headers->get("Access-Control-Request-Headers"));
                     }
 
                     $response->headers->set("Access-Control-Allow-Methods", $app["cors.allowMethods"]);
