@@ -21,7 +21,7 @@ class CorsServiceProvider implements ServiceProviderInterface
 
         foreach ($allow as $path => $methods) {
             $app->match($path, function () use ($methods) {
-                return new Response("", 204, array("Allow" => $methods));
+                return new Response("", 204, array("Allow" => implode(",", $methods)));
             })->method('OPTIONS');
         }
     }
@@ -29,7 +29,7 @@ class CorsServiceProvider implements ServiceProviderInterface
     public function register(Application $app)
     {
         $app["cors.allowOrigin"] = "*";
-        $app["cors.allowMethods"] = "*";
+        $app["cors.allowMethods"] = null; // Defaults to all
 //        $app["cors.allowHeaders"] = "*";
         $app["cors.maxAge"] = null;
         $app["cors.allowCredentials"] = false;
@@ -43,7 +43,9 @@ class CorsServiceProvider implements ServiceProviderInterface
                 }
 
                 if ($request->getMethod() === "OPTIONS" && $request->headers->has("Access-Control-Request-Method")) {
-                    if (!in_array($request->headers->get("Access-Control-Request-Method"), preg_split("/\w*,\w*/", $response->headers->get("Allow")))) {
+                    $allowMethods = is_null($app["cors.allowMethods"]) ? $app["cors.allowMethods"] : $response->headers->get("Allow");
+
+                    if (!in_array($request->headers->get("Access-Control-Request-Method"), preg_split("/\s*,\s*/", $allowMethods))) {
                         // Not a valid prefight request
                         return;
                     }
@@ -53,7 +55,7 @@ class CorsServiceProvider implements ServiceProviderInterface
                         $response->headers->set("Access-Control-Allow-Headers", $request->headers->get("Access-Control-Request-Headers"));
                     }
 
-                    $response->headers->set("Access-Control-Allow-Methods", $app["cors.allowMethods"]);
+                    $response->headers->set("Access-Control-Allow-Methods", $allowMethods);
 
                     if (isset($app["maxAge"])) {
                         $response->headers->set("Access-Control-Max-Age", $app["cors.maxAge"]);
