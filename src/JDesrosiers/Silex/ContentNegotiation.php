@@ -1,6 +1,6 @@
 <?php
 
-namespace JDesrosiers;
+namespace JDesrosiers\Silex;
 
 use JMS\Serializer\Serializer;
 use Symfony\Component\HttpFoundation\Request;
@@ -42,11 +42,11 @@ class ContentNegotiation
         return $response;
     }
 
-    public function deserializeRequest(Request $request, $class)
+    public function deserializeRequest($class)
     {
-        $format = $request->getContentType();
+        $format = $this->request->getContentType();
         if (in_array($format, $this->deserializationFormats)) {
-            return $this->serializer->deserialize($request->getContent(), $class, $format);
+            return $this->serializer->deserialize($this->request->getContent(), $class, $format);
         } else {
             throw new UnsupportedMediaTypeHttpException();
         }

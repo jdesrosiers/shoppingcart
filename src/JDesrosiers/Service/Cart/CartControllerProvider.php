@@ -103,7 +103,7 @@ class CartControllerProvider implements ControllerProviderInterface
      */
     public function createCart(Request $request)
     {
-        $requestData = $this->app["conneg"]->deserializeRequest($request, "array");
+        $requestData = $this->app["conneg"]->deserializeRequest("array");
         $cart = new Cart($requestData);
         $this->validate($cart);
 
@@ -184,7 +184,7 @@ class CartControllerProvider implements ControllerProviderInterface
      */
     public function putCart(Request $request, $cartId)
     {
-        $cart = $this->app["conneg"]->deserializeRequest($request, __NAMESPACE__ . "\Types\Cart");
+        $cart = $this->app["conneg"]->deserializeRequest(__NAMESPACE__ . "\Types\Cart");
         $this->validate($cart);
         
         $cartExists = $this->app["cart"]->contains($cartId);
@@ -236,7 +236,7 @@ class CartControllerProvider implements ControllerProviderInterface
     {
         $cart = $this->convertCart($cartId);
 
-        $cartItem = $this->app["conneg"]->deserializeRequest($request, __NAMESPACE__ . "\Types\CartItem");
+        $cartItem = $this->app["conneg"]->deserializeRequest(__NAMESPACE__ . "\Types\CartItem");
         $this->validate($cartItem);
 
         $cartItemId = $cart->addCartItem($cartItem);

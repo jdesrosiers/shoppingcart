@@ -542,7 +542,7 @@ XML;
 
         $this->assertEquals("204", $response->getStatusCode());
         $this->assertEquals("application/json", $response->headers->get("Content-Type"));
-        $this->assertEquals(array("GET", "PUT", "DELETE"), $response->headers->get("Allow", null, false));
+        $this->assertEquals("GET,PUT,DELETE", $response->headers->get("Allow"));
         $this->assertEquals("", $response->getContent());
     }
 }

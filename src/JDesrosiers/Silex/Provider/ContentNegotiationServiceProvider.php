@@ -2,7 +2,7 @@
 
 namespace JDesrosiers\Silex\Provider;
 
-use JDesrosiers\ContentNegotiation;
+use JDesrosiers\Silex\ContentNegotiation;
 use Silex\Application;
 use Silex\ServiceProviderInterface;
 use Symfony\Component\HttpFoundation\Request;

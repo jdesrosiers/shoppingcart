@@ -28,7 +28,7 @@ class CorsServiceProvider implements ServiceProviderInterface
 
     public function register(Application $app)
     {
-        $app["cors.allowOrigin"] = "*";
+        $app["cors.allowOrigin"] = null; // Defaults to all
         $app["cors.allowMethods"] = null; // Defaults to all
 //        $app["cors.allowHeaders"] = "*";
         $app["cors.maxAge"] = null;
@@ -60,11 +60,12 @@ class CorsServiceProvider implements ServiceProviderInterface
                     if (isset($app["maxAge"])) {
                         $response->headers->set("Access-Control-Max-Age", $app["cors.maxAge"]);
                     }
-                } elseif ($app["cors.exposeHeaders"]) {
+                } elseif (!is_null($app["cors.exposeHeaders"])) {
                     $response->headers->set("Access-Control-Expose-Headers", $app["cors.exposeHeaders"]);
                 }
 
-                $response->headers->set("Access-Control-Allow-Origin", $app["cors.allowOrigin"]);
+                $allowOrigin = is_null($app["cors.allowOrigin"]) ? $app["cors.allowOrigin"] : $response->headers->get("Origin");
+                $response->headers->set("Access-Control-Allow-Origin", $allowOrigin);
 
                 if ($app["cors.allowCredentials"]) {
                     $response->headers->set("Access-Control-Allow-Credentials", "true");
