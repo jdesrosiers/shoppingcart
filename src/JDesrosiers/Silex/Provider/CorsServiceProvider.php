@@ -43,7 +43,7 @@ class CorsServiceProvider implements ServiceProviderInterface
                 }
 
                 if ($request->getMethod() === "OPTIONS" && $request->headers->has("Access-Control-Request-Method")) {
-                    $allowMethods = is_null($app["cors.allowMethods"]) ? $app["cors.allowMethods"] : $response->headers->get("Allow");
+                    $allowMethods = is_null($app["cors.allowMethods"]) ? $response->headers->get("Allow") : $app["cors.allowMethods"];
 
                     if (!in_array($request->headers->get("Access-Control-Request-Method"), preg_split("/\s*,\s*/", $allowMethods))) {
                         // Not a valid prefight request
@@ -64,7 +64,7 @@ class CorsServiceProvider implements ServiceProviderInterface
                     $response->headers->set("Access-Control-Expose-Headers", $app["cors.exposeHeaders"]);
                 }
 
-                $allowOrigin = is_null($app["cors.allowOrigin"]) ? $app["cors.allowOrigin"] : $response->headers->get("Origin");
+                $allowOrigin = is_null($app["cors.allowOrigin"]) ? $response->headers->get("Origin") : $app["cors.allowOrigin"];
                 $response->headers->set("Access-Control-Allow-Origin", $allowOrigin);
 
                 if ($app["cors.allowCredentials"]) {
