@@ -1,6 +1,6 @@
 <?php
 
-namespace JDesrosiers\Tests\Cart;
+namespace JDesrosiers\Tests\Services\Cart;
 
 use Doctrine\Common\Cache\ArrayCache;
 use JDesrosiers\Service\Cart\CartControllerProvider;

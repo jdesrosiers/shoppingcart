@@ -9,12 +9,12 @@
     ],
     "require": {
         "doctrine/common": "~2.3",
+        "jdesrosiers/silex-swagger-provider": "master-dev",
         "jms/serializer": "~0.12",
         "monolog/monolog": "~1.0",
-        "silex/silex": "1.0.x-dev",
+        "silex/silex": "~1.1",
         "symfony/monolog-bridge": "~2.3",
-        "symfony/validator": "~2.3",
-        "zircote/swagger-php": "master-dev"
+        "symfony/validator": "~2.3"
     },
     "require-dev": {
         "symfony/browser-kit": "~2.3",
