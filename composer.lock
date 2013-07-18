@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "385e78183bf238e0dccd6c408a22e0b8",
+    "hash": "348fa084a152f629a20e3412dbc00017",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -199,16 +199,16 @@
         },
         {
             "name": "jdesrosiers/silex-swagger-provider",
-            "version": "dev-master",
+            "version": "v0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jdesrosiers/silex-swagger-provider.git",
-                "reference": "a0470a758f1fd14d9f5599c30dea1cfade4d4ab0"
+                "reference": "v0.1.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jdesrosiers/silex-swagger-provider/zipball/a0470a758f1fd14d9f5599c30dea1cfade4d4ab0",
-                "reference": "a0470a758f1fd14d9f5599c30dea1cfade4d4ab0",
+                "url": "https://api.github.com/repos/jdesrosiers/silex-swagger-provider/zipball/v0.1.0",
+                "reference": "v0.1.0",
                 "shasum": ""
             },
             "require": {
@@ -243,7 +243,7 @@
                 "swagger",
                 "swagger-ui"
             ],
-            "time": "2013-07-14 21:44:56"
+            "time": "2013-07-16 07:05:39"
         },
         {
             "name": "jms/metadata",
@@ -1760,9 +1760,9 @@
 
     ],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "jdesrosiers/silex-swagger-provider": 20
-    },
+    "stability-flags": [
+
+    ],
     "platform": [
 
     ],
