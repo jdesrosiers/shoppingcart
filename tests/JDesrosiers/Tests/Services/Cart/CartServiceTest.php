@@ -157,35 +157,6 @@ XML;
         $this->assertEquals($expectedResponse, $response->getContent());
     }
 
-    public function dataProviderNotAcceptableReturns406()
-    {
-        return array(
-            array(""),
-            array("text/html"),
-            array("image/jpeg"),
-            array("foo/bar"),
-        );
-    }
-
-    /**
-     * @dataProvider dataProviderNotAcceptableReturns406
-     */
-    public function testNotAcceptableReturns406($accept)
-    {
-        $headers = array(
-            "HTTP_ACCEPT" => $accept
-        );
-
-        $client = new Client($this->app, $headers);
-        $client->request("GET", "/cart/4ee8e29d45851");
-
-        $response = $client->getResponse();
-
-        $this->assertEquals("406", $response->getStatusCode());
-        $this->assertEquals("", $response->getContent());
-        $this->assertFalse($response->headers->has("Content-Type"));
-    }
-
     public function testNotModifiedReturns304()
     {
         $headers = array(
@@ -333,44 +304,6 @@ XML;
         $this->assertEquals("text/xml; charset=UTF-8", $response->headers->get("Content-Type"));
         $this->assertObjectHasAttribute("cartItemId", $responseEntity);
         $this->assertGreaterThan(0, strlen((string) $responseEntity->cartItemId));
-    }
-
-    public function dataProviderUnsupportedMediaTypeReturns415()
-    {
-        $jsonResponse = '{"error":"Unsupported Media Type","message":""}';
-        $xmlResponse = <<<XML
-<?xml version="1.0" encoding="UTF-8"?>
-<Error>
-  <error><![CDATA[Unsupported Media Type]]></error>
-  <message><![CDATA[]]></message>
-</Error>
-
-XML;
-        return array(
-            array("application/json", "image/jpeg", "application/json", $jsonResponse),
-            array("application/xml", "image/jpeg", "text/xml; charset=UTF-8", $xmlResponse),
-            array("text/xml; charset=UTF-8", "image/jpeg", "text/xml; charset=UTF-8", $xmlResponse),
-        );
-    }
-
-    /**
-     * @dataProvider dataProviderUnsupportedMediaTypeReturns415
-     */
-    public function testUnsupportedMediaTypeReturns415($accept, $contentType, $expectedContentType, $expectedResponse)
-    {
-        $headers = array(
-            "HTTP_ACCEPT" => $accept,
-            "CONTENT_TYPE" => $contentType,
-        );
-
-        $client = new Client($this->app, $headers);
-        $client->request("POST", "/cart/4ee8e29d45851/cartItems", array(), array(), $headers, "");
-
-        $response = $client->getResponse();
-
-        $this->assertEquals("415", $response->getStatusCode());
-        $this->assertEquals($expectedContentType, $response->headers->get("Content-Type"));
-        $this->assertEquals($expectedResponse, $response->getContent());
     }
 
     // Test cache invalidation
@@ -527,22 +460,5 @@ XML;
         $this->assertEquals("application/json", $response->headers->get("Content-Type"));
         $this->assertEquals("", $response->getContent());
         $this->assertTrue($this->app["cart"]->contains("4ee8e29d45851"));
-    }
-
-    public function testOptionsMethod()
-    {
-        $headers = array(
-            "HTTP_ACCEPT" => "application/json",
-        );
-
-        $client = new Client($this->app, $headers);
-        $client->request("OPTIONS", "/cart/4ee8e29d45851");
-
-        $response = $client->getResponse();
-
-        $this->assertEquals("204", $response->getStatusCode());
-        $this->assertEquals("application/json", $response->headers->get("Content-Type"));
-        $this->assertEquals("GET,PUT,DELETE", $response->headers->get("Allow"));
-        $this->assertEquals("", $response->getContent());
     }
 }

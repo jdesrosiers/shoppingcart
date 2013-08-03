@@ -9,6 +9,9 @@
     ],
     "require": {
         "doctrine/common": "~2.3",
+        "jdesrosiers/silex-conneg-provider": "dev-master",
+        "jdesrosiers/silex-cors-provider": "dev-master",
+        "jdesrosiers/silex-jms-serializer-provider": "dev-master",
         "jdesrosiers/silex-swagger-provider": "~0.1",
         "jms/serializer": "~0.12",
         "monolog/monolog": "~1.0",
