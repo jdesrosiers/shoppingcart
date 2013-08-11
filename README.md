@@ -16,48 +16,6 @@ ContentNegotiation module
 CORS support
 Swagger API definition using annotations
 
-Silex Extensions
-================
-
-ContentNegotiationServiceProvider
----------------------------------
-This serivice provides HTTP content negotiation tools.  It deals with the content negotiation headers and responses so
-you don't need to think about it.  Your code just needs to use JMS Serializer annotated classes and everything else is
-taken care of automatically.
-
-* `conneg.serializer` A JMS Serializer instance
-* `conneg.serializationFormats` Defaults to XML, JSON, and YML
-* `conneg.deserializationFormats` Defaults to XML and JSON
-* `conneg.defaultContentType` Defaults to JSON
-* `conneg` Provides a ContentNegotiation object with two methods
- * `createResponse` This works just like instatiating a new Respose, but takes a JMS Serializer annotated object instead of a string and serializes it to the format the user requested.
- * `deserializeRequest` Pass it a class name and it will deserialize the request entity and give you back an instance of that class.
-
-CorsServiceProvider
--------------------
-The CorsServiceProvider provides a service "cors" that can be added as after middleware to the Application, a
-ControllerCollection, or a Route.  It also goes through all routes and generates all necessary OPTIONS methods.  You
-can set values for all of the CORS response headers
-
- * `cors.allowOrigin`
- * `cors.allowMethods`
- * `cors.maxAge`
- * `cors.allowCredentials`
- * `cors.exposeHeaders`
-
-JmsSerializerServiceProvider
-----------------------------
-
-SwaggerServiceProvider
-----------------------
-The swagger service adds a route that will return the swagger definition in a way that swagger-ui understands.
-
- * `swagger.servicePath` Tell swagger where to look for annotations
- * `swagger.apiDocPath` Defaults to /api-docs.json
-
-ValidationServiceProvider
--------------------------
-
 TODO List
 =========
 
