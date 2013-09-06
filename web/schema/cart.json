@@ -1,0 +1,43 @@
+{
+    "title": "Shopping Cart",
+    "type": "object",
+    "properties": {
+        "cartId": {
+            "type": "string",
+            "readOnly": true
+        },
+        "createdDate": {
+            "type": "string",
+            "readOnly": true
+        },
+        "completedDate": {
+            "type": "string"
+        },
+        "cartItems": {
+            "type": "array",
+            "items": {
+                "$ref": "/schema/cartItem.json"
+            }
+        }
+    },
+    "required": ["cartItems"],
+    "links": [
+        {
+            "rel": "self",
+            "href": "/cart/{cartId}"
+        },
+        {
+            "rel": "instances",
+            "href": "/cart/"
+        },
+        {
+            "rel": "edit",
+            "href": ""
+        },
+        {
+            "rel": "delete",
+            "method": "DELETE",
+            "href": ""
+        }
+    ]
+}

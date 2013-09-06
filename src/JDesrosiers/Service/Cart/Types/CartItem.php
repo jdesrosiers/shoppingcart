@@ -43,25 +43,18 @@ class CartItem
      */
     protected $itemOptions;
 
-    public function __construct(array $cartItem)
-    {
-        $cartItem += array(
-           'cartItemId' => null,
-        );
-
-        $this->cartItemId = $cartItem['cartItemId'];
-        $this->product = $cartItem['product'];
-        $this->quantity = $cartItem['quantity'];
-        $this->itemOptions = $cartItem['itemOptions'];
-    }
-
     public function __get($name)
     {
         return $this->$name;
     }
 
-    public function setCartItemId($cartItemId)
+    /**
+     * @Serializer\PostDeserialize()
+     */
+    protected function setDefaults()
     {
-        $this->cartItemId = $cartItemId;
+        if (!$this->cartItemId) {
+            $this->cartItemId = substr(md5(microtime(true)), 0, 12);
+        }
     }
 }

@@ -12,7 +12,7 @@
         "jdesrosiers/silex-conneg-provider": "dev-master",
         "jdesrosiers/silex-cors-provider": "dev-master",
         "jdesrosiers/silex-jms-serializer-provider": "dev-master",
-        "jdesrosiers/silex-swagger-provider": "~0.1",
+        "jdesrosiers/silex-swagger-provider": "~1.0",
         "jms/serializer": "~0.12",
         "monolog/monolog": "~1.0",
         "silex/silex": "~1.1",

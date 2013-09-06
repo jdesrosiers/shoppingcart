@@ -2,7 +2,6 @@
 
 namespace JDesrosiers\Service\Cart\Types;
 
-use DateTime;
 use JMS\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
 use Swagger\Annotations as SWG;
@@ -45,27 +44,6 @@ class Cart
      */
     protected $cartItems = array();
 
-    public function __construct(array $cart)
-    {
-        if (array_key_exists('cartId', $cart)) {
-            $this->cartId = $cart['cartId'];
-            $this->createdDate = $cart['createdDate'];
-        } else {
-            $this->cartId = substr(md5(microtime(true)), 0, 12);
-            $this->createdDate = new DateTime();
-        }
-        
-        if (array_key_exists('completedDate', $cart)) {
-            $this->completedDate = $cart['completedDate'];
-        }
-
-        if (array_key_exists('cartItems', $cart)) {
-            foreach ($cart['cartItems'] as $cartItemId => $cartItem) {
-                $this->cartItems[$cartItemId] = new CartItem($cartItem);
-            }
-        }
-    }
-
     public function __get($name)
     {
         return $this->$name;
@@ -77,5 +55,25 @@ class Cart
         $this->cartItems[$cartItem->cartItemId] = $cartItem;
 
         return $cartItem->cartItemId;
+    }
+
+    /**
+     * @Serializer\PostDeserialize()
+     */
+    protected function setDefaults()
+    {
+        if (!$this->cartId) {
+            $this->cartId = substr(md5(microtime(true)), 0, 12);
+        }
+
+        if (!($this->createdDate instanceof \DateTime)) {
+            $this->createdDate = new \DateTime();
+        }
+
+//        if (array_key_exists('cartItems', $cart)) {
+//            foreach ($cart['cartItems'] as $cartItemId => $cartItem) {
+//                $this->cartItems[$cartItemId] = new CartItem($cartItem);
+//            }
+//        }
     }
 }

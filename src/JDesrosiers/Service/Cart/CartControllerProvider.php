@@ -2,17 +2,14 @@
 
 namespace JDesrosiers\Service\Cart;
 
-use JDesrosiers\Service\Cart\Types\AddToCartResponse;
-use JDesrosiers\Service\Cart\Types\Cart;
-use JDesrosiers\Service\Cart\Types\CreateCartResponse;
 use JDesrosiers\Service\Cart\Types\Error;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Swagger\Annotations as SWG;
 
 /**
@@ -38,9 +35,10 @@ class CartControllerProvider implements ControllerProviderInterface
 
         $cart = $app["controllers_factory"];
 
-        $cart->post("/", array($this, "createCart"));
+        $cart->get("/", array($this, "listCarts"));
+        $cart->post("/", array($this, "saveCart"));
         $cart->get("/{cartId}", array($this, "getCart"))->bind("cart");
-        $cart->put("/{cartId}", array($this, "putCart"));
+        $cart->put("/{cartId}", array($this, "saveCart"));
         $cart->post("/{cartId}/cartItems", array($this, "addCartItem"));
         $cart->delete("/{cartId}", array($this, "deleteCart"));
 
@@ -78,11 +76,18 @@ class CartControllerProvider implements ControllerProviderInterface
         return true;
     }
 
+    public function listCarts()
+    {
+        return $this->app["conneg"]->createResponse(array(), 200, array(
+            "Content-Type" => "application/json; profile=/schema/cartCollection.json")
+        );
+    }
+
     /**
      * @SWG\Api(
      *     path="/cart/",
      *     @SWG\Operations(
-     *         @SWG\Operation(httpMethod="POST", summary="Create a new cart", responseClass="CreateCartResponse", nickname="DeleteCart",
+     *         @SWG\Operation(httpMethod="POST", summary="Create a new cart", responseClass="Cart", nickname="CreateCart",
      *             @SWG\ErrorResponses(
      *                 @SWG\ErrorResponse(code="404", reason="Cart not found"),
      *                 @SWG\ErrorResponse(code="400", reason="Invalid input")
@@ -100,59 +105,6 @@ class CartControllerProvider implements ControllerProviderInterface
      *         )
      *     )
      * )
-     */
-    public function createCart(Request $request)
-    {
-        $requestData = $this->app["conneg"]->deserializeRequest("array");
-        $cart = new Cart($requestData);
-        $this->validate($cart);
-
-        if ($this->app["cart"]->save($cart->cartId, $cart) === false) {
-            throw new HttpException(500, "Failed to store cart");
-        }
-
-        return $this->app["conneg"]->createResponse(new CreateCartResponse($cart->cartId), 201, array(
-            'Location' => $this->app["url_generator"]->generate("cart", array("cartId" => $cart->cartId))
-        ));
-    }
-
-    /**
-     * @SWG\Api(
-     *     path="/cart/{cartId}",
-     *     @SWG\Operations(
-     *         @SWG\Operation(httpMethod="GET", summary="Find cart by ID", responseClass="Cart", nickname="GetCart",
-     *             @SWG\ErrorResponses(
-     *                 @SWG\ErrorResponse(code="404", reason="Cart not found")
-     *             ),
-     *             @SWG\Parameters(
-     *                 @SWG\Parameter(
-     *                     name="cartId",
-     *                     description="ID of cart that needs to be fetched",
-     *                     paramType="path",
-     *                     required="true",
-     *                     allowMultiple="false",
-     *                     dataType="string"
-     *                 )
-     *             )
-     *         )
-     *     )
-     * )
-     */
-    public function getCart($cartId)
-    {
-        $cart = $this->convertCart($cartId);
-
-        $response = $this->app["conneg"]->createResponse($cart);
-        $response->setCache(array(
-            "max_age" => 15,
-            "s_maxage" => 15,
-            "public" => true,
-        ));
-
-        return $response;
-    }
-
-    /**
      * @SWG\Api(
      *     path="/cart/{cartId}",
      *     @SWG\Operations(
@@ -182,72 +134,72 @@ class CartControllerProvider implements ControllerProviderInterface
      *     )
      * )
      */
-    public function putCart(Request $request, $cartId)
+    public function saveCart($cartId = "")
     {
+        $cartExists = $this->app["cart"]->contains($cartId);
+
         $cart = $this->app["conneg"]->deserializeRequest(__NAMESPACE__ . "\Types\Cart");
         $this->validate($cart);
-        
-        $cartExists = $this->app["cart"]->contains($cartId);
 
         if ($this->app["cart"]->save($cart->cartId, $cart) === false) {
             throw new HttpException(500, "Failed to store cart");
         }
 
-        if ($cartExists) {
-            return new Response("", 204);
-        } else {
-            return new Response("", 201, array(
-                'Location' => $this->app["url_generator"]->generate("cart", array("cartId" => $cart->cartId)),
-            ));
+        $response = $this->app["conneg"]->createResponse($cart, 200, array(
+            "Content-Type" => "application/json; profile=/schema/cart.json"
+        ));
+
+        if (!$cartExists) {
+            $cartUrl = $this->app["url_generator"]->generate(
+                "cart",
+                array("cartId" => $cart->cartId),
+                UrlGeneratorInterface::RELATIVE_PATH
+            );
+
+            $response->setStatusCode(201);
+            $response->headers->set("Location", $cartUrl);
         }
+
+        return $response;
     }
 
     /**
      * @SWG\Api(
-     *     path="/cart/{cartId}/cartItems",
+     *     path="/cart/{cartId}",
      *     @SWG\Operations(
-     *         @SWG\Operation(httpMethod="POST", summary="Add an item to a cart", nickname="AddToCart",
+     *         @SWG\Operation(httpMethod="GET", summary="Find cart by ID", responseClass="Cart", nickname="GetCart",
      *             @SWG\ErrorResponses(
      *                 @SWG\ErrorResponse(code="404", reason="Cart not found")
      *             ),
      *             @SWG\Parameters(
      *                 @SWG\Parameter(
      *                     name="cartId",
-     *                     description="ID of cart that the item will be added to",
+     *                     description="ID of cart that needs to be fetched",
      *                     paramType="path",
      *                     required="true",
      *                     allowMultiple="false",
      *                     dataType="string"
-     *                 ),
-     *                 @SWG\Parameter(
-     *                     name="cartItem",
-     *                     description="The item to be added to the cart",
-     *                     paramType="body",
-     *                     required="true",
-     *                     allowMultiple="false",
-     *                     dataType="CartItem"
      *                 )
      *             )
      *         )
      *     )
      * )
      */
-    public function addCartItem(Request $request, $cartId)
+    public function getCart($cartId)
     {
         $cart = $this->convertCart($cartId);
 
-        $cartItem = $this->app["conneg"]->deserializeRequest(__NAMESPACE__ . "\Types\CartItem");
-        $this->validate($cartItem);
-
-        $cartItemId = $cart->addCartItem($cartItem);
-
-        if ($this->app["cart"]->save($cart->cartId, $cart) === false) {
-            throw new HttpException(500, "Failed to store cart");
-        }
-
-        return $this->app["conneg"]->createResponse(new AddToCartResponse($cartItemId), 303, array(
-            "Location" => $this->app["url_generator"]->generate("cart", array("cartId" => $cart->cartId))
+        $response = $this->app["conneg"]->createResponse($cart, 200, array(
+            "Content-Type" => "application/json; profile=/schema/cart.json"
         ));
+
+        $response->setCache(array(
+            "max_age" => 15,
+            "s_maxage" => 15,
+            "public" => true,
+        ));
+
+        return $response;
     }
 
     /**
@@ -277,7 +229,7 @@ class CartControllerProvider implements ControllerProviderInterface
         $cart = $this->convertCart($cartId);
 
         if ($this->app["cart"]->delete($cart->cartId) === false) {
-            throw new HttpException(500, "Failed to store cart");
+            throw new HttpException(500, "Failed to delete cart");
         }
 
         return $this->app["conneg"]->createResponse("", 204);

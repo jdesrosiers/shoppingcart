@@ -1,0 +1,26 @@
+{
+    "title": "Cart Item",
+    "type": "object",
+    "properties": {
+        "cartItemId": {
+            "type": "string",
+            "readOnly": true
+        },
+        "product": {
+            "type": "string"
+        },
+        "quantity": {
+            "type": "integer"
+        },
+        "itemOptions": {
+            "type": "object"
+        }
+    },
+    "required": ["product", "quantity"],
+    "links": [
+        {
+            "rel": "self",
+            "href": "cartItems/{cartItemId}"
+        }
+    ]
+}

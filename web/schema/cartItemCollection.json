@@ -1,0 +1,36 @@
+{
+    "title": "CartItem Collection",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "/schema/collection.json"
+        },
+        {
+            "properties": {
+                "collection": {
+                    "title": "Collection",
+                    "type": "array",
+                    "items": {
+                        "$ref": "/schema/orderItem.json"
+                    },
+                    "additionalItems": false
+                }
+            }
+        }
+    ],
+    "additionalProperties": false,
+    "links": [
+        {
+            "rel": "self",
+            "href": "/cartItem/"
+        },
+        {
+            "rel": "create",
+            "method": "POST",
+            "href": "",
+            "schema": {
+                "$ref": "/schema/cartItem.json"
+            }
+        }
+    ]
+}
