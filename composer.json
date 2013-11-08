@@ -8,22 +8,22 @@
         }
     ],
     "require": {
+        "aws/aws-sdk-php": "~2.4",
+        "aws/aws-sdk-php-silex": "dev-master",
         "doctrine/common": "~2.3",
         "jdesrosiers/silex-conneg-provider": "dev-master",
         "jdesrosiers/silex-cors-provider": "dev-master",
-        "jdesrosiers/silex-jms-serializer-provider": "dev-master",
-        "jdesrosiers/silex-swagger-provider": "~1.0",
-        "jms/serializer": "~0.12",
         "monolog/monolog": "~1.0",
         "silex/silex": "~1.1",
-        "symfony/monolog-bridge": "~2.3",
-        "symfony/validator": "~2.3"
+        "symfony/monolog-bridge": "~2.3"
     },
     "require-dev": {
         "symfony/browser-kit": "~2.3",
         "phpunit/phpunit": "~3.7"
     },
     "autoload": {
-        "psr-0": {"JDesrosiers": "src/"}
+        "psr-0": {
+            "JDesrosiers": "src/"
+        }
     }
 }

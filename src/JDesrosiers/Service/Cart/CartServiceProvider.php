@@ -2,7 +2,6 @@
 
 namespace JDesrosiers\Service\Cart;
 
-use Doctrine\Common\Cache\ApcCache;
 use Silex\Application;
 use Silex\ServiceProviderInterface;
 
@@ -10,13 +9,23 @@ class CartServiceProvider implements ServiceProviderInterface
 {
     public function boot(Application $app)
     {
-        ;
+
     }
 
     public function register(Application $app)
     {
-        $app["cart"] = $app->share(function () {
-            return new ApcCache();
-        });
-    }    
+        $app["cart.environment"] = "";
+
+        $app["cart"] = $app->share(
+            function (Application $app) {
+                return new CartService($app["aws"]->get("dynamodb"), $app["cart.environment"]);
+            }
+        );
+
+        $app["cart.search"] = $app->share(
+            function (Application $app) {
+                return new CartSearchService($app["aws"]->get("dynamodb"), $app["cart.environment"]);
+            }
+        );
+    }
 }

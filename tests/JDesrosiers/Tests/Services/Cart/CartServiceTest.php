@@ -4,7 +4,7 @@ namespace JDesrosiers\Tests\Services\Cart;
 
 use Doctrine\Common\Cache\ArrayCache;
 use JDesrosiers\Service\Cart\CartControllerProvider;
-use JDesrosiers\Service\Cart\Types\Cart;
+//use JDesrosiers\Service\Cart\CartServiceProvider;
 use Symfony\Component\HttpKernel\Client;
 
 require_once __DIR__ . "/../../../../../vendor/autoload.php";
@@ -21,25 +21,27 @@ class CartServiceTest extends \PHPUnit_Framework_TestCase
         $this->app["http_cache.cache_dir"] = dirname(__DIR__) . "/testcache/";
 
         $this->app["cart"] = new ArrayCache();
+//        $this->app->register(new CartServiceProvider(), array(
+//            "cart.environment" => "test",
+//        ));
         $this->app->mount("/cart", new CartControllerProvider());
 
-        $this->app['cart']->save("4ee8e29d45851", new Cart(array(
+        $this->app['cart']->save("4ee8e29d45851", array(
             "cartId" => "4ee8e29d45851",
-            "createdDate" => new \DateTime("2002-10-10T12:00:00-05:00"),
-            "completedDate" => null,
+            "createdDate" => "2002-10-10T12:00:00-05:00",
             "cartItems" => array(
                 "4d45851e8e29" => array(
                     "cartItemId" => "4d45851e8e29",
-                    "product" => "/product/abc123",
+                    "product" => "abc123",
                     "quantity" => 1,
                     "itemOptions" => array(
                         "color" => "Red",
                         "size" => "XL",
                     ),
                 ),
-                "5851e84d4e29" => array(
-                    "cartItemId" => "5851e84d4e29",
-                    "product" => "/product/abc123",
+                "5851e84d4e30" => array(
+                    "cartItemId" => "5851e84d4e30",
+                    "product" => "abc123",
                     "quantity" => 1,
                     "itemOptions" => array(
                         "color" => "Blue",
@@ -47,7 +49,7 @@ class CartServiceTest extends \PHPUnit_Framework_TestCase
                     ),
                 ),
             ),
-        )));
+        ));
     }
 
     public function tearDown()
@@ -55,113 +57,54 @@ class CartServiceTest extends \PHPUnit_Framework_TestCase
         exec("rm -rf " . dirname(__DIR__) . "/testcache/");
     }
 
-    public function dataProviderCreateCart()
+    public function testCreateCart()
     {
-        $xml = <<<XML
-<?xml version="1.0" encoding="UTF-8"?>
-<Cart>
-</Cart>
-XML;
-
-        return array(
-            array("application/json", '{}'),
-            array("application/xml", $xml),
-            array("text/xml; charset=UTF-8", $xml),
-        );
-    }
-
-    /**
-     * @dataProvider dataProviderCreateCart
-     */
-    public function testCreateCart($contentType, $requestEntity)
-    {
-        // TODO Variations: Accept xml, no content;
-        // TODO Test with cartItems
         $headers = array(
             "HTTP_ACCEPT" => "application/json",
-            "CONTENT_TYPE" => $contentType,
+            "CONTENT_TYPE" => "application/json",
         );
 
-        $client = new Client($this->app, $headers);
-        $client->request("POST", "/cart/", array(), array(), $headers, $requestEntity);
+        $client = new Client($this->app["http_cache"], $headers);
+        $client->request("POST", "/cart/", array(), array(), $headers, '{"cartItems":[]}');
 
         $response = $client->getResponse();
         $responseEntity = json_decode($response->getContent(), true);
 
         $this->assertEquals(201, $response->getStatusCode());
-        $this->assertEquals("application/json", $response->headers->get("Content-Type"));
+        $this->assertEquals('application/json; profile="/schema/cart.json"', $response->headers->get("Content-Type"));
         $this->assertArrayHasKey("cartId", $responseEntity);
         $this->assertGreaterThan(0, strlen($responseEntity["cartId"]));
         $this->assertEquals("/cart/{$responseEntity["cartId"]}", $response->headers->get("Location"));
 
         $storedCart = $this->app["cart"]->fetch($responseEntity["cartId"]);
-        $this->assertEquals($responseEntity["cartId"], $storedCart->cartId);
-        $this->assertEquals('DateTime', get_class($storedCart->createdDate));
+        $this->assertEquals($responseEntity["cartId"], $storedCart["cartId"]);
+        $this->assertGreaterThanOrEqual(strtotime($storedCart["createdDate"]), time() + 1);
+        $this->assertLessThanOrEqual(strtotime($storedCart["createdDate"]), time() - 1);
     }
 
-    public function dataProviderGetCart()
+    public function testGetCart()
     {
-        $json = '{"cartId":"4ee8e29d45851","createdDate":"2002-10-10T12:00:00-0500","cartItems":{"4d45851e8e29":{"cartItemId":"4d45851e8e29","product":"\/product\/abc123","quantity":1,"itemOptions":{"color":"Red","size":"XL"}},"5851e84d4e29":{"cartItemId":"5851e84d4e29","product":"\/product\/abc123","quantity":1,"itemOptions":{"color":"Blue","size":"XL"}}}}';
-        $xml = <<<XML
-<?xml version="1.0" encoding="UTF-8"?>
-<Cart>
-  <cartId><![CDATA[4ee8e29d45851]]></cartId>
-  <createdDate><![CDATA[2002-10-10T12:00:00-0500]]></createdDate>
-  <cartItems>
-    <cartItem>
-      <cartItemId><![CDATA[4d45851e8e29]]></cartItemId>
-      <product><![CDATA[/product/abc123]]></product>
-      <quantity>1</quantity>
-      <itemOptions>
-        <itemOption name="color"><![CDATA[Red]]></itemOption>
-        <itemOption name="size"><![CDATA[XL]]></itemOption>
-      </itemOptions>
-    </cartItem>
-    <cartItem>
-      <cartItemId><![CDATA[5851e84d4e29]]></cartItemId>
-      <product><![CDATA[/product/abc123]]></product>
-      <quantity>1</quantity>
-      <itemOptions>
-        <itemOption name="color"><![CDATA[Blue]]></itemOption>
-        <itemOption name="size"><![CDATA[XL]]></itemOption>
-      </itemOptions>
-    </cartItem>
-  </cartItems>
-</Cart>
+        $expectedResponse = '{"cartId":"4ee8e29d45851","createdDate":"2002-10-10T12:00:00-05:00","cartItems":{"4d45851e8e29":{"cartItemId":"4d45851e8e29","product":"abc123","quantity":1,"itemOptions":{"color":"Red","size":"XL"}},"5851e84d4e30":{"cartItemId":"5851e84d4e30","product":"abc123","quantity":1,"itemOptions":{"color":"Blue","size":"XL"}}}}';
 
-XML;
-
-        return array(
-            array("application/json", "application/json", $json),
-            array("application/xml", "text/xml; charset=UTF-8", $xml),
-            array("text/xml", "text/xml; charset=UTF-8", $xml),
-        );
-    }
-
-    /**
-     * @dataProvider dataProviderGetCart
-     */
-    public function testGetCart($accept, $expectedContentType, $expectedResponse)
-    {
         $headers = array(
-            "HTTP_ACCEPT" => $accept,
+            "HTTP_ACCEPT" => "application/json",
         );
 
-        $client = new Client($this->app, $headers);
+        $client = new Client($this->app["http_cache"], $headers);
         $client->request("GET", "/cart/4ee8e29d45851");
 
         $response = $client->getResponse();
 
-        $this->assertTrue($response->isOk());
-        $this->assertEquals($expectedContentType, $response->headers->get("Content-Type"));
-        $this->assertEquals($expectedResponse, $response->getContent());
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("application/json; profile=\"/schema/cart.json\"", $response->headers->get("Content-Type"));
+        $this->assertJsonStringEqualsJsonString($expectedResponse, $response->getContent());
     }
 
     public function testNotModifiedReturns304()
     {
         $headers = array(
             "HTTP_ACCEPT" => "application/json",
-            "HTTP_IF_NONE_MATCH" => '"49fe5e81e4d90156fbef0a3ae347777f"',
+            "HTTP_IF_NONE_MATCH" => '"bb0efacaa2ad144a5a0f7042e96eb00a"',
         );
 
         $client = new Client($this->app['http_cache'], $headers);
@@ -174,140 +117,38 @@ XML;
         $this->assertFalse($response->headers->has("Content-Type"));
     }
 
-    public function dataProviderCartNotFoundReturns404()
-    {
-        $json = '{"error":"Not Found","message":"Cart with ID [nosuchcart] was not found"}';
-        $xml = <<<XML
-<?xml version="1.0" encoding="UTF-8"?>
-<Error>
-  <error><![CDATA[Not Found]]></error>
-  <message><![CDATA[Cart with ID [nosuchcart] was not found]]></message>
-</Error>
-
-XML;
-        return array(
-            array("application/json", "application/json", $json),
-            array("application/xml", "text/xml; charset=UTF-8", $xml),
-            array("text/xml", "text/xml; charset=UTF-8", $xml),
-        );
-    }
-
-    /**
-     * @dataProvider dataProviderCartNotFoundReturns404
-     */
-    public function testCartNotFoundReturns404($accept, $contentType, $content)
+    public function testCartNotFoundReturns404()
     {
         $headers = array(
-            "HTTP_ACCEPT" => $accept,
+            "HTTP_ACCEPT" => "application/json",
         );
 
-        $client = new Client($this->app, $headers);
+        $client = new Client($this->app["http_cache"], $headers);
         $client->request("GET", "/cart/nosuchcart");
 
         $response = $client->getResponse();
 
         $this->assertEquals("404", $response->getStatusCode());
-        $this->assertEquals($contentType, $response->headers->get("Content-Type"));
-        $this->assertEquals($content, $response->getContent());
     }
 
-    public function dataProviderAddItemToCartJson()
+    public function testAddItemToCartJson()
     {
-        $jsonPost = '{"product":"\/product\/abc123","quantity":1,"itemOptions":{"color":"Red","size":"XL"}}';
-        $xmlPost = <<<XML
-<?xml version="1.0" encoding="UTF-8"?>
-<CartItem>
-  <product><![CDATA[/product/abc123]]></product>
-  <quantity>1</quantity>
-  <itemOptions>
-    <itemOption name="color"><![CDATA[Red]]></itemOption>
-    <itemOption name="size"><![CDATA[XL]]></itemOption>
-  </itemOptions>
-</CartItem>
-XML;
+        $cartItem = '{"product":"\/product\/abc123","quantity":1,"itemOptions":{"color":"Red","size":"XL"}}';
 
-        return array(
-            array("application/json", $jsonPost),
-            array("text/xml; charset=UTF-8", $xmlPost),
-            array("application/xml", $xmlPost),
-        );
-    }
-
-    /**
-     * @dataProvider dataProviderAddItemToCartJson
-     */
-    public function testAddItemToCartJson($contentType, $cartItem)
-    {
         // TODO Verify cart saved correctly
         $headers = array(
             "HTTP_ACCEPT" => "application/json",
-            "CONTENT_TYPE" => $contentType,
+            "CONTENT_TYPE" => "application/json",
         );
 
         $client = new Client($this->app['http_cache'], $headers);
         $client->request("POST", "/cart/4ee8e29d45851/cartItems", array(), array(), $headers, $cartItem);
 
         $response = $client->getResponse();
-        $responseEntity = json_decode($response->getContent(), true);
 
         $this->assertEquals("303", $response->getStatusCode());
         $this->assertEquals("/cart/4ee8e29d45851", $response->headers->get("Location"));
-        $this->assertEquals("application/json", $response->headers->get("Content-Type"));
-        $this->assertArrayHasKey("cartItemId", $responseEntity);
-        $this->assertGreaterThan(0, strlen($responseEntity["cartItemId"]));
     }
-
-    public function dataProviderAddItemToCartXml()
-    {
-        $jsonPost = '{"product":"\/product\/abc123","quantity":1,"itemOptions":{"color":"Red","size":"XL"}}';
-        $xmlPost = <<<XML
-<?xml version="1.0" encoding="UTF-8"?>
-<CartItem>
-  <product><![CDATA[/product/abc123]]></product>
-  <quantity>1</quantity>
-  <itemOptions>
-    <itemOption name="color"><![CDATA[Red]]></itemOption>
-    <itemOption name="size"><![CDATA[XL]]></itemOption>
-  </itemOptions>
-</CartItem>
-XML;
-
-        return array(
-            array("text/xml; charset=UTF-8", "application/json", $jsonPost),
-            array("text/xml; charset=UTF-8", "text/xml; charset=UTF-8", $xmlPost),
-            array("text/xml; charset=UTF-8", "application/xml", $xmlPost),
-            array("application/xml", "application/json", $jsonPost),
-            array("application/xml", "text/xml; charset=UTF-8", $xmlPost),
-            array("application/xml", "text/xml; charset=UTF-8", $xmlPost),
-        );
-    }
-
-    /**
-     * @dataProvider dataProviderAddItemToCartXml
-     */
-    public function testAddItemToCartXml($accept, $contentType, $cartItem)
-    {
-        // TODO Verify cart saved correctly
-        $headers = array(
-            "HTTP_ACCEPT" => $accept,
-            "CONTENT_TYPE" => $contentType,
-        );
-
-        $client = new Client($this->app, $headers);
-        $client->request("POST", "/cart/4ee8e29d45851/cartItems", array(), array(), $headers, $cartItem);
-
-        $response = $client->getResponse();
-        $responseEntity = simplexml_load_string($response->getContent());
-
-        $this->assertEquals("303", $response->getStatusCode());
-        $this->assertEquals("/cart/4ee8e29d45851", $response->headers->get("Location"));
-        $this->assertEquals("text/xml; charset=UTF-8", $response->headers->get("Content-Type"));
-        $this->assertObjectHasAttribute("cartItemId", $responseEntity);
-        $this->assertGreaterThan(0, strlen((string) $responseEntity->cartItemId));
-    }
-
-    // Test cache invalidation
-    // Test request entity validation
 
     public function testDeleteCart()
     {
@@ -315,7 +156,7 @@ XML;
             "HTTP_ACCEPT" => "application/json",
         );
 
-        $client = new Client($this->app, $headers);
+        $client = new Client($this->app["http_cache"], $headers);
         $client->request("DELETE", "/cart/4ee8e29d45851");
 
         $response = $client->getResponse();
@@ -324,141 +165,5 @@ XML;
         $this->assertEquals("application/json", $response->headers->get("Content-Type"));
         $this->assertEquals("", $response->getContent());
         $this->assertFalse($this->app["cart"]->contains("4ee8e29d45851"));
-    }
-
-    public function testDeleteCartThatDoesntExist()
-    {
-        $headers = array(
-            "HTTP_ACCEPT" => "application/json",
-        );
-
-        $client = new Client($this->app, $headers);
-        $client->request("DELETE", "/cart/nosuchcart");
-
-        $response = $client->getResponse();
-
-        $this->assertEquals("404", $response->getStatusCode());
-        $this->assertEquals("application/json", $response->headers->get("Content-Type"));
-        $this->assertEquals('{"error":"Not Found","message":"Cart with ID [nosuchcart] was not found"}', $response->getContent());
-    }
-    
-    public function dataProviderPutCreateCart()
-    {
-        $json = '{"cartId":"9d458514ee8e2","createdDate":"2002-10-10T12:00:00-0500","cartItems":{"4d45851e8e29":{"cartItemId":"4d45851e8e29","product":"\/product\/abc123","quantity":1,"itemOptions":{"color":"Red","size":"XL"}},"5851e84d4e29":{"cartItemId":"5851e84d4e29","product":"\/product\/abc123","quantity":1,"itemOptions":{"color":"Blue","size":"XL"}}}}';
-        $xml = <<<XML
-<?xml version="1.0" encoding="UTF-8"?>
-<Cart>
-  <cartId><![CDATA[9d458514ee8e2]]></cartId>
-  <createdDate><![CDATA[2002-10-10T12:00:00-0500]]></createdDate>
-  <cartItems>
-    <cartItem>
-      <cartItemId><![CDATA[4d45851e8e29]]></cartItemId>
-      <product><![CDATA[/product/abc123]]></product>
-      <quantity>1</quantity>
-      <itemOptions>
-        <itemOption name="color"><![CDATA[Red]]></itemOption>
-        <itemOption name="size"><![CDATA[XL]]></itemOption>
-      </itemOptions>
-    </cartItem>
-    <cartItem>
-      <cartItemId><![CDATA[5851e84d4e29]]></cartItemId>
-      <product><![CDATA[/product/abc123]]></product>
-      <quantity>1</quantity>
-      <itemOptions>
-        <itemOption name="color"><![CDATA[Blue]]></itemOption>
-        <itemOption name="size"><![CDATA[XL]]></itemOption>
-      </itemOptions>
-    </cartItem>
-  </cartItems>
-</Cart>
-
-XML;
-
-        return array(
-            array("application/json", $json),
-            array("application/xml", $xml),
-            array("text/xml", $xml),
-        );
-    }
-
-    /**
-     * @dataProvider dataProviderPutCreateCart
-     */
-    public function testPutCreateCart($contentType, $content)
-    {
-        $headers = array(
-            "HTTP_ACCEPT" => "application/json",
-            "CONTENT_TYPE" => $contentType,
-        );
-
-        $client = new Client($this->app, $headers);
-        $client->request("PUT", "/cart/9d458514ee8e2", array(), array(), $headers, $content);
-
-        $response = $client->getResponse();
-
-        $this->assertEquals("201", $response->getStatusCode());
-        $this->assertEquals("application/json", $response->headers->get("Content-Type"));
-        $this->assertEquals('', $response->getContent());
-        $this->assertTrue($this->app["cart"]->contains("9d458514ee8e2"));
-    }
-    
-    public function dataProviderPutUpdateCart()
-    {
-        $json = '{"cartId":"4ee8e29d45851","createdDate":"2002-10-10T12:00:00-0500","cartItems":{"4d45851e8e29":{"cartItemId":"4d45851e8e29","product":"\/product\/abc123","quantity":1,"itemOptions":{"color":"Red","size":"XL"}},"5851e84d4e29":{"cartItemId":"5851e84d4e29","product":"\/product\/abc123","quantity":1,"itemOptions":{"color":"Blue","size":"XL"}}}}';
-        $xml = <<<XML
-<?xml version="1.0" encoding="UTF-8"?>
-<Cart>
-  <cartId><![CDATA[4ee8e29d45851]]></cartId>
-  <createdDate><![CDATA[2002-10-10T12:00:00-0500]]></createdDate>
-  <cartItems>
-    <cartItem>
-      <cartItemId><![CDATA[4d45851e8e29]]></cartItemId>
-      <product><![CDATA[/product/abc123]]></product>
-      <quantity>1</quantity>
-      <itemOptions>
-        <itemOption name="color"><![CDATA[Red]]></itemOption>
-        <itemOption name="size"><![CDATA[XL]]></itemOption>
-      </itemOptions>
-    </cartItem>
-    <cartItem>
-      <cartItemId><![CDATA[5851e84d4e29]]></cartItemId>
-      <product><![CDATA[/product/abc123]]></product>
-      <quantity>1</quantity>
-      <itemOptions>
-        <itemOption name="color"><![CDATA[Blue]]></itemOption>
-        <itemOption name="size"><![CDATA[XL]]></itemOption>
-      </itemOptions>
-    </cartItem>
-  </cartItems>
-</Cart>
-
-XML;
-
-        return array(
-            array("application/json", $json),
-            array("application/xml", $xml),
-            array("text/xml", $xml),
-        );
-    }
-
-    /**
-     * @dataProvider dataProviderPutUpdateCart
-     */
-    public function testPutUpdateCart($contentType, $content)
-    {
-        $headers = array(
-            "HTTP_ACCEPT" => "application/json",
-            "CONTENT_TYPE" => $contentType,
-        );
-
-        $client = new Client($this->app, $headers);
-        $client->request("PUT", "/cart/4ee8e29d45851", array(), array(), $headers, $content);
-
-        $response = $client->getResponse();
-
-        $this->assertEquals("204", $response->getStatusCode());
-        $this->assertEquals("application/json", $response->headers->get("Content-Type"));
-        $this->assertEquals("", $response->getContent());
-        $this->assertTrue($this->app["cart"]->contains("4ee8e29d45851"));
     }
 }

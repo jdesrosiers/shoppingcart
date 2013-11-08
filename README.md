@@ -1,26 +1,11 @@
 RESTful shoppingcart web service
 ============
+[![Build Status](https://travis-ci.org/jdesrosiers/shoppingcart.png)](https://travis-ci.org/jdesrosiers/shoppingcart)
+[![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/jdesrosiers/shoppingcart/badges/quality-score.png?s=b14bd811c0923c3bbbf21f0c40d76a3d6e7d808d)](https://scrutinizer-ci.com/g/jdesrosiers/shoppingcart/)
+[![Code Coverage](https://scrutinizer-ci.com/g/jdesrosiers/shoppingcart/badges/coverage.png?s=232c43a608f449c2d38bc2e9a0032285124eda39)](https://scrutinizer-ci.com/g/jdesrosiers/shoppingcart/)
 
 This is a toy project I'm working on.  It has the following goals.
 
 * Learn the Silex framework https://github.com/fabpot/Silex
 * Make a web service that even Roy Fielding would consider RESTful
 * End up with something that can be used as a starting point for quickly producing RESTful services in the future
-
-Features
-========
-
-Typical GET, POST, PUT, DELETE operations
-POST 303 pattern
-ContentNegotiation module
-CORS support
-Swagger API definition using annotations
-
-TODO List
-=========
-
-* Checkout the SecurityServiceProvider.  What are it's capabilities and limitations?  What other options are there?
-* Checkout the TranslationServiceProvier.  What are it's capabilities and limitations?  What other options are there?
-* Explore json hyper-schema as a way of satisfying the HATEOAS requirement of REST
-* Create Silex middleware for jsonp support
-* Explore strategies for deploying and maintaining more than one version of an API

@@ -2,15 +2,21 @@
 
 use JDesrosiers\Service\Cart\CartControllerProvider;
 use JDesrosiers\Service\Cart\CartServiceProvider;
-
-// If ther file exists on the filesystem, bail and let that file be served.
-$filename = preg_replace('#(\?.*)$#', '', $_SERVER['REQUEST_URI']);
-if (php_sapi_name() === 'cli-server' && is_file(__DIR__ . $filename)) {
-    return false;
-}
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 require_once __DIR__ . "/../vendor/autoload.php";
 $app = require __DIR__ . "/../app/dev.php";
+
+// Serve schema files
+$app->get("/schema/{path}.json", function ($path) use ($app) {
+    $fullpath = __DIR__ . "/../schema/$path.php";
+    if (!file_exists($fullpath)) {
+        throw new NotFoundHttpException();
+    }
+
+    $schema = require $fullpath;
+    return $app->json($schema);
+})->assert("path", ".+");
 
 // Add controllers
 $app->register(new CartServiceProvider());
