@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class CartControllerProvider implements ControllerProviderInterface
 {
     const CONTENT_TYPE = "application/json; profile=\"/schema/cart.json\"";
-    const COLLECTION_CONTENT_TYPE = "application/json; profile=\"/schema/cartCollection.json\"";
+    const INDEX_CONTENT_TYPE = "application/json; profile=\"/schema/index.json\"";
 
     protected $app;
 
@@ -23,7 +23,7 @@ class CartControllerProvider implements ControllerProviderInterface
 
         $cart = $app["controllers_factory"];
 
-        $cart->get("/", array($this, "listCarts"));
+        $cart->get("/", array($this, "index"));
         $cart->get("/{cartId}", array($this, "getCart"))->bind("cart");
         $cart->post("/", array($this, "createCart"));
         $cart->post("/{cartId}/cartItems", array($this, "addItem"));
@@ -34,13 +34,14 @@ class CartControllerProvider implements ControllerProviderInterface
         return $cart;
     }
 
-    public function listCarts(Request $request)
+    public function index()
     {
-        return $this->app->json(
-            $this->app["cart.search"]->query($request->query),
-            200,
-            array("Content-Type" => self::COLLECTION_CONTENT_TYPE)
+        $index = array(
+            "title" => "shoppingcart",
+            "description" => "Welcome to the shoppingcart service",
         );
+
+        return $this->app->json($index, 200, array("Content-Type" => self::INDEX_CONTENT_TYPE));
     }
 
     public function getCart($cartId)
@@ -78,6 +79,7 @@ class CartControllerProvider implements ControllerProviderInterface
 
         $cartItemId = uniqid();
         $item["cartItemId"] = $cartItemId;
+        $item["cartId"] = $cartId;
         $cart["cartItems"][$cartItemId] = $item;
 
         $this->app["cart"]->save($cart["cartId"], $cart);

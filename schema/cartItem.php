@@ -8,11 +8,22 @@ return array(
             "type" => "string",
             "readOnly" => true,
         ),
+        "cartId" => array(
+            "\$ref" => "/schema/cart.json#/properties/cartId",
+        ),
         "partNumber" => array(
             "type" => "string",
+            "links" => array(
+                array(
+                    "rel" => "full",
+                    "href" => "/product/{\$}",
+                ),
+            ),
         ),
         "quantity" => array(
             "type" => "integer",
+            "minimum" => 1,
+            "default" => 1,
         ),
         "itemOptions" => array(
             "type" => "object",
@@ -22,11 +33,17 @@ return array(
     "links" => array(
         array(
             "rel" => "self",
-            "href" => "cartItems/{cartItemId}",
+            "href" => "/cart/{cartId}/cartItems/{cartItemId}",
         ),
         array(
-            "rel" => "get-product",
-            "href" => "/product/{partNumber}",
+            "rel" => "update-item",
+            "method" => "PUT",
+            "href" => ""
+        ),
+        array(
+            "rel" => "remove-item",
+            "method" => "DELETE",
+            "href" => ""
         ),
     ),
 );

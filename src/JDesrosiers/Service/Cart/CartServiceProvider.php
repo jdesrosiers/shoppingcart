@@ -21,11 +21,5 @@ class CartServiceProvider implements ServiceProviderInterface
                 return new CartService($app["aws"]->get("dynamodb"), $app["cart.environment"]);
             }
         );
-
-        $app["cart.search"] = $app->share(
-            function (Application $app) {
-                return new CartSearchService($app["aws"]->get("dynamodb"), $app["cart.environment"]);
-            }
-        );
     }
 }

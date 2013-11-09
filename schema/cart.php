@@ -7,6 +7,12 @@ return array(
         "cartId" => array(
             "type" => "string",
             "readOnly" => true,
+            "links" => array(
+                array(
+                    "rel" => "full",
+                    "href" => "/cart/{\$}",
+                ),
+            ),
         ),
         "createdDate" => array(
             "type" => "string",
@@ -37,19 +43,6 @@ return array(
             "schema" => array(
                 "\$ref" => "/schema/cartItem.json",
             ),
-        ),
-        array(
-            "rel" => "update-item",
-            "method" => "PUT",
-            "href" => "/cart/{cartId}/cartItems/{cartItemId}",
-            "schema" => array(
-                "\$ref" => "/schema/cartItem.json",
-            ),
-        ),
-        array(
-            "rel" => "remove-item",
-            "method" => "DELETE",
-            "href" => "/cart/{cartId}/cartItems/{cartItemId}"
         ),
         array(
             "rel" => "delete",
