@@ -1,6 +1,5 @@
 <?php
 
-use Aws\Silex\AwsServiceProvider;
 use JDesrosiers\Silex\Provider\ContentNegotiationServiceProvider;
 use JDesrosiers\Silex\Provider\CorsServiceProvider;
 use Monolog\Logger;
@@ -17,14 +16,6 @@ $app["debug"] = true;
 
 // Register service providers
 $app->register(new UrlGeneratorServiceProvider());
-$app->register(new AwsServiceProvider(), array(
-    "aws.config" => array(
-        "key" => getenv("AWS_ACCESS_KEY_ID"),
-        "secret" => getenv("AWS_SECRET_ACCESS_KEY"),
-        "region" => getenv("AWS_DEFAULT_REGION"),
-        "ssl" => array("certificate_authority" => true),
-    )
-));
 $app->register(new ContentNegotiationServiceProvider(), array(
     "conneg.responseFormats" => array("json"),
     "conneg.requestFormats" => array("json"),

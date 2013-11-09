@@ -4,7 +4,6 @@ namespace JDesrosiers\Tests\Services\Cart;
 
 use Doctrine\Common\Cache\ArrayCache;
 use JDesrosiers\Service\Cart\CartControllerProvider;
-//use JDesrosiers\Service\Cart\CartServiceProvider;
 use Symfony\Component\HttpKernel\Client;
 
 require_once __DIR__ . "/../../../../../vendor/autoload.php";
@@ -21,9 +20,6 @@ class CartServiceTest extends \PHPUnit_Framework_TestCase
         $this->app["http_cache.cache_dir"] = dirname(__DIR__) . "/testcache/";
 
         $this->app["cart"] = new ArrayCache();
-//        $this->app->register(new CartServiceProvider(), array(
-//            "cart.environment" => "test",
-//        ));
         $this->app->mount("/cart", new CartControllerProvider());
 
         $this->app['cart']->save("4ee8e29d45851", array(

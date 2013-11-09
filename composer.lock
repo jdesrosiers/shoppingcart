@@ -3,127 +3,8 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "8800f933c1f138283e8ea3fa273ab243",
+    "hash": "873aa9bec5808a000e4fc0e691a9a7d5",
     "packages": [
-        {
-            "name": "aws/aws-sdk-php",
-            "version": "2.4.8",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "204550d00de76f70c8a69444823320354a0898c7"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/204550d00de76f70c8a69444823320354a0898c7",
-                "reference": "204550d00de76f70c8a69444823320354a0898c7",
-                "shasum": ""
-            },
-            "require": {
-                "guzzle/guzzle": "~3.7.0",
-                "php": ">=5.3.3"
-            },
-            "require-dev": {
-                "doctrine/cache": "~1.0",
-                "ext-openssl": "*",
-                "monolog/monolog": "1.4.*",
-                "phpunit/phpunit": "3.7.*",
-                "symfony/class-loader": "2.*",
-                "symfony/yaml": "2.*"
-            },
-            "suggest": {
-                "doctrine/cache": "Adds support for caching of credentials and responses",
-                "ext-apc": "Allows service description opcode caching, request and response caching, and credentials caching",
-                "ext-openssl": "Allows working with CloudFront private distributions and verifying received SNS messages",
-                "monolog/monolog": "Adds support for logging HTTP requests and responses",
-                "symfony/yaml": "Eases the ability to write manifests for creating jobs in AWS Import/Export"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.4.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Aws": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "authors": [
-                {
-                    "name": "Amazon Web Services",
-                    "homepage": "http://aws.amazon.com"
-                }
-            ],
-            "description": "AWS SDK for PHP",
-            "homepage": "http://aws.amazon.com/sdkforphp2",
-            "keywords": [
-                "amazon",
-                "aws",
-                "dynamodb",
-                "ec2",
-                "s3",
-                "sdk"
-            ],
-            "time": "2013-10-31 19:16:43"
-        },
-        {
-            "name": "aws/aws-sdk-php-silex",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/aws/aws-sdk-php-silex.git",
-                "reference": "14aee8e620dcd91f4f297b02f7ba74261731ad82"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php-silex/zipball/14aee8e620dcd91f4f297b02f7ba74261731ad82",
-                "reference": "14aee8e620dcd91f4f297b02f7ba74261731ad82",
-                "shasum": ""
-            },
-            "require": {
-                "aws/aws-sdk-php": "~2.0",
-                "php": ">=5.3.3",
-                "silex/silex": "~1.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Aws\\Silex": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "authors": [
-                {
-                    "name": "Amazon Web Services",
-                    "homepage": "http://aws.amazon.com"
-                }
-            ],
-            "description": "A simple Silex service provider for including the AWS SDK for PHP.",
-            "homepage": "http://aws.amazon.com/sdkforphp2",
-            "keywords": [
-                "amazon",
-                "aws",
-                "dynamodb",
-                "ec2",
-                "s3",
-                "sdk",
-                "silex"
-            ],
-            "time": "2013-07-05 16:38:02"
-        },
         {
             "name": "doctrine/annotations",
             "version": "v1.1.2",
@@ -527,109 +408,17 @@
             "time": "2013-01-12 18:59:04"
         },
         {
-            "name": "guzzle/guzzle",
-            "version": "v3.7.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "b170b028c6bb5799640e46c8803015b0f9a45ed9"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/b170b028c6bb5799640e46c8803015b0f9a45ed9",
-                "reference": "b170b028c6bb5799640e46c8803015b0f9a45ed9",
-                "shasum": ""
-            },
-            "require": {
-                "ext-curl": "*",
-                "php": ">=5.3.3",
-                "symfony/event-dispatcher": ">=2.1"
-            },
-            "replace": {
-                "guzzle/batch": "self.version",
-                "guzzle/cache": "self.version",
-                "guzzle/common": "self.version",
-                "guzzle/http": "self.version",
-                "guzzle/inflection": "self.version",
-                "guzzle/iterator": "self.version",
-                "guzzle/log": "self.version",
-                "guzzle/parser": "self.version",
-                "guzzle/plugin": "self.version",
-                "guzzle/plugin-async": "self.version",
-                "guzzle/plugin-backoff": "self.version",
-                "guzzle/plugin-cache": "self.version",
-                "guzzle/plugin-cookie": "self.version",
-                "guzzle/plugin-curlauth": "self.version",
-                "guzzle/plugin-error-response": "self.version",
-                "guzzle/plugin-history": "self.version",
-                "guzzle/plugin-log": "self.version",
-                "guzzle/plugin-md5": "self.version",
-                "guzzle/plugin-mock": "self.version",
-                "guzzle/plugin-oauth": "self.version",
-                "guzzle/service": "self.version",
-                "guzzle/stream": "self.version"
-            },
-            "require-dev": {
-                "doctrine/cache": "*",
-                "monolog/monolog": "1.*",
-                "phpunit/phpunit": "3.7.*",
-                "psr/log": "1.0.*",
-                "symfony/class-loader": "*",
-                "zendframework/zend-cache": "2.0.*",
-                "zendframework/zend-log": "2.0.*"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.7-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Guzzle\\Tests": "tests/",
-                    "Guzzle": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Michael Dowling",
-                    "email": "mtdowling@gmail.com",
-                    "homepage": "https://github.com/mtdowling"
-                },
-                {
-                    "name": "Guzzle Community",
-                    "homepage": "https://github.com/guzzle/guzzle/contributors"
-                }
-            ],
-            "description": "Guzzle is a PHP HTTP client library and framework for building RESTful web service clients",
-            "homepage": "http://guzzlephp.org/",
-            "keywords": [
-                "client",
-                "curl",
-                "framework",
-                "http",
-                "http client",
-                "rest",
-                "web service"
-            ],
-            "time": "2013-10-02 20:47:00"
-        },
-        {
             "name": "jdesrosiers/silex-conneg-provider",
-            "version": "dev-master",
+            "version": "v0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jdesrosiers/silex-conneg-provider.git",
-                "reference": "a42d48e9c301bd956b43d9586f212eff5ded1d59"
+                "reference": "ffaf5f45dcc966a738e735a496c2c0b5ef895c6d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jdesrosiers/silex-conneg-provider/zipball/a42d48e9c301bd956b43d9586f212eff5ded1d59",
-                "reference": "a42d48e9c301bd956b43d9586f212eff5ded1d59",
+                "url": "https://api.github.com/repos/jdesrosiers/silex-conneg-provider/zipball/ffaf5f45dcc966a738e735a496c2c0b5ef895c6d",
+                "reference": "ffaf5f45dcc966a738e735a496c2c0b5ef895c6d",
                 "shasum": ""
             },
             "require": {
@@ -669,11 +458,11 @@
                 "service provider",
                 "silex"
             ],
-            "time": "2013-11-03 04:51:32"
+            "time": "2013-11-07 03:38:28"
         },
         {
             "name": "jdesrosiers/silex-cors-provider",
-            "version": "dev-master",
+            "version": "v0.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jdesrosiers/silex-cors-provider.git",
@@ -1818,11 +1607,9 @@
 
     ],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "aws/aws-sdk-php-silex": 20,
-        "jdesrosiers/silex-conneg-provider": 20,
-        "jdesrosiers/silex-cors-provider": 20
-    },
+    "stability-flags": [
+
+    ],
     "platform": [
 
     ],

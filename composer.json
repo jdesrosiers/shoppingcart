@@ -8,11 +8,9 @@
         }
     ],
     "require": {
-        "aws/aws-sdk-php": "~2.4",
-        "aws/aws-sdk-php-silex": "dev-master",
         "doctrine/common": "~2.3",
-        "jdesrosiers/silex-conneg-provider": "dev-master",
-        "jdesrosiers/silex-cors-provider": "dev-master",
+        "jdesrosiers/silex-conneg-provider": "~0.1",
+        "jdesrosiers/silex-cors-provider": "~0.1",
         "monolog/monolog": "~1.0",
         "silex/silex": "~1.1",
         "symfony/monolog-bridge": "~2.3"
