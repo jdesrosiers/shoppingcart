@@ -7,8 +7,15 @@
             "email": "jdesrosi@gmail.com"
         }
     ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:jdesrosiers/json-object-php.git"
+        }
+    ],
     "require": {
         "doctrine/common": "~2.3",
+        "jdesrosiers/json-object-php": "dev-master",
         "jdesrosiers/silex-conneg-provider": "~0.1",
         "jdesrosiers/silex-cors-provider": "~0.1",
         "monolog/monolog": "~1.0",
@@ -20,7 +27,7 @@
         "phpunit/phpunit": "~3.7"
     },
     "autoload": {
-        "psr-0": {
+        "psr-4": {
             "JDesrosiers": "src/"
         }
     }

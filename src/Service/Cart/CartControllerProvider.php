@@ -2,6 +2,7 @@
 
 namespace JDesrosiers\Service\Cart;
 
+use JDesrosiers\Json\JsonObject;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -12,8 +13,9 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CartControllerProvider implements ControllerProviderInterface
 {
-    const CONTENT_TYPE = "application/json; profile=\"/schema/cart.json\"";
-    const INDEX_CONTENT_TYPE = "application/json; profile=\"/schema/index.json\"";
+    const CART_CONTENT_TYPE = "application/json; profile=/schema/cart.json";
+    const CART_ITEM_CONTENT_TYPE = "application/json; profile=/schema/cart.json";
+    const INDEX_CONTENT_TYPE = "application/json; profile=/schema/index.json";
 
     protected $app;
 
@@ -51,8 +53,8 @@ class CartControllerProvider implements ControllerProviderInterface
             throw new NotFoundHttpException("There is no cart with cartId `$cartId`");
         }
 
-        $json = json_encode($cart);
-        $response = Response::create($json, 200, array("Content-Type" => self::CONTENT_TYPE));
+        $json = json_encode($cart->getValue());
+        $response = Response::create($json, 200, array("Content-Type" => self::CART_CONTENT_TYPE));
         $response->setEtag(md5($json));
         
         return $response;
@@ -60,29 +62,34 @@ class CartControllerProvider implements ControllerProviderInterface
 
     public function createCart(Request $request)
     {
-        $cart = $this->cleanData(json_decode($request->getContent(), true));
-        $cart["cartId"] = uniqid();
-        $cart["createdDate"] = date(\DateTime::ISO8601);
+        //$schemaUrl = "http://" . $request->server->get("HTTP_HOST") . "/schema/cart.json";
+        $schemaUrl = __DIR__ . "/../../../../schema/cart.json";
+        $cart = new JsonObject($this->cleanData(json_decode($request->getContent())), $schemaUrl);
+        $cart->cartId = uniqid();
+        $cart->createdDate = date(\DateTime::ISO8601);
 
-        $this->app["cart"]->save($cart["cartId"], $cart);
+        $this->app["cart"]->save($cart->cartId->getValue(), $cart);
 
-        $location = $this->app["url_generator"]->generate("cart", array("cartId" => $cart["cartId"]));
-        $response = $this->app->json($cart, 201, array("Content-Type" => self::CONTENT_TYPE, "Location" => $location));
+        $location = $this->app["url_generator"]->generate("cart", array("cartId" => $cart->cartId->getValue()));
+        $headers = array("Content-Type" => self::CART_CONTENT_TYPE, "Location" => $location);
+        $response = $this->app->json($cart->getValue(), 201, $headers);
 
         return $response;
     }
 
     public function addItem(Request $request, $cartId)
     {
-        $item = $this->cleanData(json_decode($request->getContent(), true));
+        //$schemaUrl = "http://" . $request->server->get("HTTP_HOST") . "/schema/cartItem.json";
+        $schemaUrl = __DIR__ . "/../../../../schema/cartItem.json";
+        $item = new JsonObject($this->cleanData(json_decode($request->getContent())), $schemaUrl);
         $cart = $this->app["cart"]->fetch($cartId);
 
         $cartItemId = uniqid();
-        $item["cartItemId"] = $cartItemId;
-        $item["cartId"] = $cartId;
-        $cart["cartItems"][$cartItemId] = $item;
+        $item->cartItemId = $cartItemId;
+        $item->cartId = $cartId;
+        $cart->cartItems->$cartItemId = $item;
 
-        $this->app["cart"]->save($cart["cartId"], $cart);
+        $this->app["cart"]->save($cartId, $cart);
 
         $location = $this->app["url_generator"]->generate("cart", array("cartId" => $cartId));
         return RedirectResponse::create($location, 303);
@@ -90,20 +97,22 @@ class CartControllerProvider implements ControllerProviderInterface
 
     public function updateItem(Request $request, $cartId, $cartItemId)
     {
-        $item = $this->cleanData(json_decode($request->getContent(), true));
+        //$schemaUrl = "http://" . $request->server->get("HTTP_HOST") . "/schema/cartItem.json";
+        $schemaUrl = __DIR__ . "/../../../../schema/cartItem.json";
+        $item = new JsonObject($this->cleanData(json_decode($request->getContent())), $schemaUrl);
         $cart = $this->app["cart"]->fetch($cartId);
 
-        if (!array_key_exists($cartItemId, $cart["cartItems"])) {
+        if (!isset($cart->cartItems->$cartItemId)) {
             throw new BadRequestHttpException("The cart has no item with cartItemId [$cartItemId]");
         }
 
-        if ($item["cartItemId"] !== $cartItemId) {
+        if ($item->cartItemId->getValue() !== $cartItemId) {
             throw new BadRequestHttpException("The cartItemId [$cartItemId] does not match the one in the request");
         }
 
-        $cart["cartItems"][$cartItemId] = $item;
+        $cart->cartItems->$cartItemId = $item;
 
-        $this->app["cart"]->save($cart["cartId"], $cart);
+        $this->app["cart"]->save($cartId, $cart);
 
         $location = $this->app["url_generator"]->generate("cart", array("cartId" => $cartId));
         return RedirectResponse::create($location, 303);
@@ -112,9 +121,9 @@ class CartControllerProvider implements ControllerProviderInterface
     public function removeItem($cartId, $cartItemId)
     {
         $cart = $this->app["cart"]->fetch($cartId);
-        unset($cart["cartItems"][$cartItemId]);
+        unset($cart->cartItems->$cartItemId);
 
-        $this->app["cart"]->save($cart["cartId"], $cart);
+        $this->app["cart"]->save($cartId, $cart);
 
         $location = $this->app["url_generator"]->generate("cart", array("cartId" => $cartId));
         return RedirectResponse::create($location, 303);
@@ -132,6 +141,10 @@ class CartControllerProvider implements ControllerProviderInterface
         if (is_array($value)) {
             foreach ($value as $ndx => $arrayValue) {
                 $value[$ndx] = $this->cleanData($arrayValue);
+            }
+        } elseif (is_object($value)) {
+            foreach ($value as $ndx => $property) {
+                $value->$ndx = $this->cleanData($property);
             }
         } elseif ((string) intval($value) === $value) {
             $value = intval($value);

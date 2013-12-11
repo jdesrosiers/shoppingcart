@@ -1,0 +1,54 @@
+{
+    "$schema": "http://json-schema.org/draft-04/hyper-schema#",
+    "title": "Shopping Cart",
+    "type": "object",
+    "properties": {
+        "cartId": {
+            "type": "string",
+            "readOnly": true,
+            "links": [
+                {
+                    "rel": "full",
+                    "href": "/cart/{$}"
+                }
+            ]
+        },
+        "createdDate": {
+            "type": "string",
+            "readOnly": true
+        },
+        "completedDate": {
+            "type": "string"
+        },
+        "cartItems": {
+            "type": "object",
+            "patternProperties": {
+                ".*": {
+                    "$ref": "/schema/cartItem.json"
+                }
+            }
+        }
+    },
+    "required": [
+        "cartItems"
+    ],
+    "links": [
+        {
+            "rel": "self",
+            "href": "/cart/{cartId}"
+        },
+        {
+            "rel": "add-item",
+            "method": "POST",
+            "href": "/cart/{cartId}/cartItems",
+            "schema": {
+                "$ref": "/schema/cartItem.json"
+            }
+        },
+        {
+            "rel": "delete",
+            "method": "DELETE",
+            "href": ""
+        }
+    ]
+}

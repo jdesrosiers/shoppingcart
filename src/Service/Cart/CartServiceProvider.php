@@ -15,10 +15,8 @@ class CartServiceProvider implements ServiceProviderInterface
 
     public function register(Application $app)
     {
-        $app["cart.environment"] = "";
-
         $app["cart"] = $app->share(
-            function (Application $app) {
+            function () {
                 return new ApcCache();
             }
         );

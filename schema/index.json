@@ -1,0 +1,27 @@
+{
+    "$schema": "http://json-schema.org/draft-04/hyper-schema#",
+    "title": "Shopping Cart",
+    "type": "object",
+    "properties": {
+        "title": {
+            "type": "string"
+        },
+        "description": {
+            "type": "string"
+        }
+    },
+    "links": [
+        {
+            "rel": "self",
+            "href": "/cart/"
+        },
+        {
+            "rel": "create",
+            "method": "POST",
+            "href": "",
+            "schema": {
+                "$ref": "/schema/cart.json"
+            }
+        }
+    ]
+}

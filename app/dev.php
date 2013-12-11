@@ -36,7 +36,7 @@ $app->register(new HttpCacheServiceProvider(), array(
     ),
 ));
 $app->register(new CorsServiceProvider(), array(
-    "cors.allowOrigin" => "http://jsonary.s3-website-us-west-2.amazonaws.com",
+    "cors.allowOrigin" => "http://jsonary.com",
 ));
 
 return $app;

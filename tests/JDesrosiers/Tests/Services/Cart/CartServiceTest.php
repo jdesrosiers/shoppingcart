@@ -3,6 +3,7 @@
 namespace JDesrosiers\Tests\Services\Cart;
 
 use Doctrine\Common\Cache\ArrayCache;
+use JDesrosiers\Json\JsonObject;
 use JDesrosiers\Service\Cart\CartControllerProvider;
 use Symfony\Component\HttpKernel\Client;
 
@@ -22,7 +23,7 @@ class CartServiceTest extends \PHPUnit_Framework_TestCase
         $this->app["cart"] = new ArrayCache();
         $this->app->mount("/cart", new CartControllerProvider());
 
-        $this->app['cart']->save("4ee8e29d45851", array(
+        $cart = array(
             "cartId" => "4ee8e29d45851",
             "createdDate" => "2002-10-10T12:00:00-05:00",
             "cartItems" => array(
@@ -45,7 +46,9 @@ class CartServiceTest extends \PHPUnit_Framework_TestCase
                     ),
                 ),
             ),
-        ));
+        );
+        $schema = __DIR__ . "/../../../../../schema/cart.json";
+        $this->app['cart']->save("4ee8e29d45851", new JsonObject(json_decode(json_encode($cart)), $schema));
     }
 
     public function tearDown()
@@ -61,21 +64,21 @@ class CartServiceTest extends \PHPUnit_Framework_TestCase
         );
 
         $client = new Client($this->app["http_cache"], $headers);
-        $client->request("POST", "/cart/", array(), array(), $headers, '{"cartItems":[]}');
+        $client->request("POST", "/cart/", array(), array(), $headers, '{"cartItems":{}}');
 
         $response = $client->getResponse();
-        $responseEntity = json_decode($response->getContent(), true);
+        $responseEntity = json_decode($response->getContent());
 
         $this->assertEquals(201, $response->getStatusCode());
-        $this->assertEquals('application/json; profile="/schema/cart.json"', $response->headers->get("Content-Type"));
-        $this->assertArrayHasKey("cartId", $responseEntity);
-        $this->assertGreaterThan(0, strlen($responseEntity["cartId"]));
-        $this->assertEquals("/cart/{$responseEntity["cartId"]}", $response->headers->get("Location"));
+        $this->assertEquals("application/json; profile=/schema/cart.json", $response->headers->get("Content-Type"));
+        $this->assertObjectHasAttribute("cartId", $responseEntity);
+        $this->assertGreaterThan(0, strlen($responseEntity->cartId));
+        $this->assertEquals("/cart/{$responseEntity->cartId}", $response->headers->get("Location"));
 
-        $storedCart = $this->app["cart"]->fetch($responseEntity["cartId"]);
-        $this->assertEquals($responseEntity["cartId"], $storedCart["cartId"]);
-        $this->assertGreaterThanOrEqual(strtotime($storedCart["createdDate"]), time() + 1);
-        $this->assertLessThanOrEqual(strtotime($storedCart["createdDate"]), time() - 1);
+        $storedCart = $this->app["cart"]->fetch($responseEntity->cartId);
+        $this->assertEquals($responseEntity->cartId, $storedCart->cartId->getValue());
+        $this->assertGreaterThanOrEqual(strtotime($storedCart->createdDate->getValue()), time() + 1);
+        $this->assertLessThanOrEqual(strtotime($storedCart->createdDate->getValue()), time() - 1);
     }
 
     public function testGetCart()
@@ -92,7 +95,7 @@ class CartServiceTest extends \PHPUnit_Framework_TestCase
         $response = $client->getResponse();
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals("application/json; profile=\"/schema/cart.json\"", $response->headers->get("Content-Type"));
+        $this->assertEquals("application/json; profile=/schema/cart.json", $response->headers->get("Content-Type"));
         $this->assertJsonStringEqualsJsonString($expectedResponse, $response->getContent());
     }
 
@@ -129,7 +132,7 @@ class CartServiceTest extends \PHPUnit_Framework_TestCase
 
     public function testAddItemToCartJson()
     {
-        $cartItem = '{"product":"\/product\/abc123","quantity":1,"itemOptions":{"color":"Red","size":"XL"}}';
+        $cartItem = '{"partNumber":"abc123","quantity":1,"itemOptions":{"color":"Red","size":"XL"}}';
 
         // TODO Verify cart saved correctly
         $headers = array(

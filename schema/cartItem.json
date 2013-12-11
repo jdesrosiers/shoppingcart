@@ -1,0 +1,48 @@
+{
+    "$schema": "http://json-schema.org/draft-04/hyper-schema#",
+    "title": "Cart Item",
+    "type": "object",
+    "properties": {
+        "cartItemId": {
+            "type": "string",
+            "readOnly": true
+        },
+        "cartId": {
+            "$ref": "/schema/cart.json#/properties/cartId"
+        },
+        "partNumber": {
+            "type": "string",
+            "links": [
+                {
+                    "rel": "full",
+                    "href": "/product/{$}"
+                }
+            ]
+        },
+        "quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+        },
+        "itemOptions": {
+            "type": "object"
+        }
+    },
+    "required": ["partNumber", "quantity"],
+    "links": [
+        {
+            "rel": "self",
+            "href": "/cart/{cartId}/cartItems/{cartItemId}"
+        },
+        {
+            "rel": "update-item",
+            "method": "PUT",
+            "href": ""
+        },
+        {
+            "rel": "remove-item",
+            "method": "DELETE",
+            "href": ""
+        }
+    ]
+}
