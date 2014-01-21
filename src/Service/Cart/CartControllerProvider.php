@@ -63,7 +63,7 @@ class CartControllerProvider implements ControllerProviderInterface
     public function createCart(Request $request)
     {
         //$schemaUrl = "http://" . $request->server->get("HTTP_HOST") . "/schema/cart.json";
-        $schemaUrl = __DIR__ . "/../../../../schema/cart.json";
+        $schemaUrl = __DIR__ . "/../../../schema/cart.json";
         $cart = new JsonObject($this->cleanData(json_decode($request->getContent())), $schemaUrl);
         $cart->cartId = uniqid();
         $cart->createdDate = date(\DateTime::ISO8601);
@@ -80,7 +80,7 @@ class CartControllerProvider implements ControllerProviderInterface
     public function addItem(Request $request, $cartId)
     {
         //$schemaUrl = "http://" . $request->server->get("HTTP_HOST") . "/schema/cartItem.json";
-        $schemaUrl = __DIR__ . "/../../../../schema/cartItem.json";
+        $schemaUrl = __DIR__ . "/../../../schema/cartItem.json";
         $item = new JsonObject($this->cleanData(json_decode($request->getContent())), $schemaUrl);
         $cart = $this->app["cart"]->fetch($cartId);
 
@@ -98,7 +98,7 @@ class CartControllerProvider implements ControllerProviderInterface
     public function updateItem(Request $request, $cartId, $cartItemId)
     {
         //$schemaUrl = "http://" . $request->server->get("HTTP_HOST") . "/schema/cartItem.json";
-        $schemaUrl = __DIR__ . "/../../../../schema/cartItem.json";
+        $schemaUrl = __DIR__ . "/../../../schema/cartItem.json";
         $item = new JsonObject($this->cleanData(json_decode($request->getContent())), $schemaUrl);
         $cart = $this->app["cart"]->fetch($cartId);
 

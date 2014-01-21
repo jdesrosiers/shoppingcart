@@ -7,7 +7,7 @@ use JDesrosiers\Json\JsonObject;
 use JDesrosiers\Service\Cart\CartControllerProvider;
 use Symfony\Component\HttpKernel\Client;
 
-require_once __DIR__ . "/../../../../../vendor/autoload.php";
+require_once __DIR__ . "/../../../vendor/autoload.php";
 
 class CartServiceTest extends \PHPUnit_Framework_TestCase
 {
@@ -16,7 +16,7 @@ class CartServiceTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         exec("rm -rf " . dirname(__DIR__) . "/testcache/");
-        $this->app = require __DIR__ . "/../../../../../app/dev.php";
+        $this->app = require __DIR__ . "/../../../app/dev.php";
 
         $this->app["http_cache.cache_dir"] = dirname(__DIR__) . "/testcache/";
 
@@ -47,7 +47,7 @@ class CartServiceTest extends \PHPUnit_Framework_TestCase
                 ),
             ),
         );
-        $schema = __DIR__ . "/../../../../../schema/cart.json";
+        $schema = __DIR__ . "/../../../schema/cart.json";
         $this->app['cart']->save("4ee8e29d45851", new JsonObject(json_decode(json_encode($cart)), $schema));
     }
 

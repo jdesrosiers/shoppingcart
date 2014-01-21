@@ -15,6 +15,7 @@
     ],
     "require": {
         "doctrine/common": "~2.3",
+        "geraintluff/jsv4": "dev-master",
         "jdesrosiers/json-object-php": "dev-master",
         "jdesrosiers/silex-conneg-provider": "~0.1",
         "jdesrosiers/silex-cors-provider": "~0.1",
@@ -28,7 +29,7 @@
     },
     "autoload": {
         "psr-4": {
-            "JDesrosiers": "src/"
+            "JDesrosiers\\": "src/"
         }
     }
 }
